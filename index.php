@@ -1,5 +1,13 @@
-<php
+<?php
+include __DIR__ . '/auth/authentication/auth.php';
+$message = "";
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user = new User();
+    if (!$user->login($_POST['username'], $_POST['password'])) {
+        $message = "Invalid username/email or password.";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -16,19 +24,31 @@
 
 <body>
 
-  <nav class="navbar px-5">
+  <nav class="navbar px-5 bg-light">
     <div class="d-flex align-items-center gap-5">
       <a class="navbar-brand m-0 p-0" href="index.php">
-        <img src="assets/images/logo_v1_light.png" alt="Logo" width="100" height="80">
+        <img src="assets/images/official_logo.png" alt="Logo" width="100" height="80">
       </a>
       <h3 class="supply mb-0">WIP Supplies Ledger</h3>
     </div>
   </nav>
 
-  
+  <div class="login-container">
+    <div class="login-box">
+      <h2>Login</h2>
+      <?php if ($message): ?>
+        <div class="error"><?= htmlspecialchars($message) ?></div>
+      <?php endif; ?>
+      <form method="post">
+        <input type="text" name="username" placeholder="Username or Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
 
-<script src="assets/bootstrap/all.min.js"></script>
-<script src="assets/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="assets/bootstrap/all.min.js"></script>
+  <script src="assets/bootstrap/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

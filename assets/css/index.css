@@ -1,8 +1,9 @@
-/* BRAND COLORS
-MIDNIGHT CYAN #1A2634
-GOLD #CCAA49
-PRUSSIAN BLUE #123765
-*/
+/* BRAND COLORS */
+:root {
+    --midnight-cyan: #1A2634;
+    --gold: #CCAA49;
+    --prussian-blue: #123765;
+}
 
 body {
     font-family: Arial, sans-serif;
@@ -12,22 +13,76 @@ body {
 }
 
 .navbar {
-    background-color: #123765; /* PRUSSIAN BLUE */
+    background-color: var(--prussian-blue);
     padding: 10px 20px;
     display: flex;
     align-items: center;
 }
 
+.supply {
+    font-weight: bold;
+    color: var(--gold);
+}
+
 h1 {
-    color: #1A2634; /* MIDNIGHT CYAN */
+    color: var(--midnight-cyan);
     text-align: center;
     margin-top: 50px;
 }
 
-.supply {
+/* LOGIN FORM STYLES */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.login-box {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    width: 350px;
+    text-align: center;
+}
+
+.login-box h2 {
+    margin-bottom: 20px;
+    color: var(--prussian-blue);
+}
+
+input[type="text"], 
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: var(--gold);
+    color: var(--midnight-cyan);
     font-weight: bold;
-    color: #CCAA49; /* GOLD */
-}   
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background-color: #b8953f; /* slightly darker gold */
+}
+
+.error {
+    color: red;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -49,5 +104,10 @@ h1 {
 
     .supply {
         font-size: clamp(0.9rem, 4vw, 1.2rem);
+    }
+
+    .login-box {
+        width: 90%;
+        padding: 20px;
     }
 }
