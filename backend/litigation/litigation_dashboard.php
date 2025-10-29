@@ -5,7 +5,7 @@ include '../../sql/config.php';
 $db = new Database();
 $conn = $db->getConnection();
 
-if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'accounting') {
+if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'litigation') {
     header('Location: ' . BASE_URL . 'index.php');
     exit();
 }
@@ -27,8 +27,8 @@ if (!$user) {
     exit();
 }
 
-if (strtolower($user['department']) !== 'accounting') {
-    echo "Access denied. You are not in Accounting.";
+if (strtolower($user['department']) !== 'litigation') {
+    echo "Access denied. You are not in litigation.";
     exit();
 }
 
@@ -43,7 +43,7 @@ $department = $user['department'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STLAF | Accounting Dashboard</title>
+    <title>STLAF | Litigation Dashboard</title>
     <link rel="stylesheet" href="../../assets/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../../assets/css/index.css">
     <link rel="stylesheet" href="assets/style.css">

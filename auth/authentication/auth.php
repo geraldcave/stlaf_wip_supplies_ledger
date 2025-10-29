@@ -38,31 +38,31 @@ class User
 
                 switch (strtolower($user['department'])) {
                     case 'hr':
-                        header("Location: ../../dashboard/hr_dashboard.php");
+                        header("Location: backend/hr/hr_dashboard.php");
                         break;
                     case 'accounting':
                         header("Location: backend/accounting/accounting_dashboard.php");
                         break;
                     case 'admin':
-                        header("Location: ../../dashboard/admin_dashboard.php");
+                        header("Location: backend/admin/admin_dashboard.php");
                         break;
                     case 'corporate':
-                        header("Location: ../../dashboard/corporate_dashboard.php");
+                        header("Location: backend/corporate/corporate_dashboard.php");
                         break;
                     case 'it':
-                        header("Location: ../../dashboard/it_dashboard.php");
+                        header("Location: backend/it/it_dashboard.php");
                         break;
                     case 'litigation':
-                        header("Location: ../../dashboard/litigation_dashboard.php");
+                        header("Location: backend/litigation/litigation_dashboard.php");
                         break;
                     case 'marketing':
-                        header("Location: ../../dashboard/marketing_dashboard.php");
+                        header("Location: backend/marketing/marketing_dashboard.php");
                         break;
                     case 'ops':
-                        header("Location: ../../dashboard/ops_dashboard.php");
+                        header("Location: backend/ops/ops_dashboard.php");
                         break;
                     default:
-                        header("Location: ../../dashboard/default_dashboard.php");
+                        header("Location: index.php");
                 }
                 exit();
             }
