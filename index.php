@@ -3,10 +3,18 @@ include __DIR__ . '/auth/authentication/auth.php';
 $message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user = new User();
+  $user = new User();
+
+  if (isset($_POST['login_as_employee'])) {
+    $user->loginAsEmployee();
+    exit;
+  }
+
+  if (isset($_POST['username']) && isset($_POST['password'])) {
     if (!$user->login($_POST['username'], $_POST['password'])) {
-        $message = "Invalid username/email or password.";
+      $message = "Invalid username/email or password.";
     }
+  }
 }
 ?>
 
@@ -42,7 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <form method="post">
         <input type="text" name="username" placeholder="Username or Email" required>
         <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+
+      <form method="post">
+        <button type="submit" name="login_as_employee" class="guest-btn">Login as Guest</button>
       </form>
     </div>
   </div>
@@ -51,4 +63,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="assets/bootstrap/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

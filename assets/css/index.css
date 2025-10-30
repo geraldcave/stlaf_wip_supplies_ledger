@@ -84,6 +84,21 @@ button:hover {
     font-size: 14px;
 }
 
+.guest-btn {
+    margin-top: 10px;
+    background-color: transparent;
+    color: var(--prussian-blue);
+    border: 2px solid var(--prussian-blue);
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.guest-btn:hover {
+    background-color: var(--prussian-blue);
+    color: white;
+}
+
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .navbar {
