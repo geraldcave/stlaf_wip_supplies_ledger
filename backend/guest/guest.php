@@ -25,7 +25,7 @@ $department = ucfirst($_SESSION['department'] ?? 'Employee');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STLAF | Employee Dashboard</title>
+    <title>STLAF | Request Form</title>
     <link rel="stylesheet" href="../../assets/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="../../assets/css/index.css">
     <link rel="stylesheet" href="assets/style.css">
@@ -51,7 +51,7 @@ $department = ucfirst($_SESSION['department'] ?? 'Employee');
             <?php
             $displayName = ($firstname === '' || strtolower($firstname) === 'guest_employee') ? 'Guest' : $firstname;
             ?>
-            <span>Welcome, <?= htmlspecialchars($displayName) ?> (<?= htmlspecialchars($department) ?>)</span>
+            <!-- <span>Welcome, <?= htmlspecialchars($displayName) ?> (<?= htmlspecialchars($department) ?>)</span> -->
             <a href="../../logout.php">
                 <button class="logout-btn">Logout</button>
             </a>
@@ -110,7 +110,7 @@ $department = ucfirst($_SESSION['department'] ?? 'Employee');
                             <option value="Ream">Ream</option>
                             <option value="Box">Box</option>
                             <option value="Pack">Pack</option>
-                            <option value="Pc/Pcs">Pc/Pcs</option>
+                            <option value="Pc/Pcs">Pc/s.</option>
                             <option value="Roll">Roll</option>
                             <option value="Bottle">Bottle</option>
                         </select>
@@ -150,6 +150,9 @@ $department = ucfirst($_SESSION['department'] ?? 'Employee');
                 guestAlertModal.show();
             });
         <?php endif; ?>
+            if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
     </script>
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="../../assets/bootstrap/all.min.js"></script>

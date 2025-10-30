@@ -3,7 +3,7 @@
             background-color: #f4f4f4;
         }
         .navbar {
-            background-color: #123765;
+            /* background-color: #123765; */
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
