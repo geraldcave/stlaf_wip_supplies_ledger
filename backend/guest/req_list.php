@@ -117,8 +117,15 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
                                 ?>
                                 <td>
                                     <span class="status-badge <?= $badgeClass ?>"><?= $status ?></span>
+                                    <?php if (strtolower($status) === 'cancelled'): ?>
+                                        <br>
+                                        <small class="text-muted">
+                                            Reason: <?= htmlspecialchars($row['cancel_reason'] ?? 'No reason provided') ?>
+                                        </small>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?= date("M d, Y h:i A", strtotime($row['date_req'])) ?></td>
+
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
