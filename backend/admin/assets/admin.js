@@ -1,3 +1,7 @@
+const toggler = document.querySelector(".toggler-btn");
+toggler.addEventListener("click", function () {
+  document.querySelector("#sidebar").classList.toggle("collapsed");
+});
 function updateRequestStatus(req_id, status) {
   let reason = null;
 
@@ -29,7 +33,7 @@ function updateRequestStatus(req_id, status) {
     .catch((err) => console.error("Error:", err));
 }
 // Pagination setup
-const rowsPerPage = 8;
+const rowsPerPage = 10;
 const tableBody = document.getElementById("requestTableBody");
 const pagination = document.getElementById("pagination");
 const rows = tableBody.querySelectorAll("tr");
