@@ -41,12 +41,20 @@ $department = ucfirst($_SESSION['department'] ?? 'Employee');
 
 <body>
     <nav class="navbar px-5 bg-light">
-        <div class="d-flex align-items-center gap-5">
-            <a class="navbar-brand m-0 p-0" href="guest.php">
+        <div class="d-flex align-items-center gap-3">
+            <a href="guest.php" class="navbar-brand m-0 p-0">
                 <img src="../../assets/images/official_logo.png" alt="Logo" width="100" height="80">
             </a>
-            <h3 class="supply mb-0">Request Form</h3>
+            <div class="d-flex gap-2">
+                <a href="guest.php" class="btn btn-outline-primary fw-bold">
+                    Request Form
+                </a>
+                <a href="req_list.php" class="btn btn-outline-primary fw-bold">
+                    View Requests
+                </a>
+            </div>
         </div>
+
         <div class="d-flex justify-content-end align-items-center gap-3">
             <?php
             $displayName = ($firstname === '' || strtolower($firstname) === 'guest_employee') ? 'Guest' : $firstname;
@@ -150,9 +158,9 @@ $department = ucfirst($_SESSION['department'] ?? 'Employee');
                 guestAlertModal.show();
             });
         <?php endif; ?>
-            if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
     </script>
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="../../assets/bootstrap/all.min.js"></script>
