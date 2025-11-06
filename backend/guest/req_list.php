@@ -67,10 +67,13 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
                     <button class="nav-link" data-status="Pending">Pending</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-status="Delivered">Approved</button>
+                    <button class="nav-link" data-status="Approved">Approved</button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" data-status="Cancelled">Declined</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-status="Delivered">Delivered</button>
                 </li>
             </ul>
             <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">

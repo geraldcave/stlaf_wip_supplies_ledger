@@ -14,8 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $reason = $_POST['reason'] ?? null;
 
     if ($id && $action === 'approve') {
+        // First step: just approve
+        $request->updateStatus($id, 'Approved');
+    } elseif ($id && $action === 'deliver') {
+        // Second step: delivery
         $request->updateStatus($id, 'Delivered');
     } elseif ($id && $reason) {
+        // If cancelled
         $request->updateStatus($id, 'Cancelled', $reason);
     }
 }
@@ -58,6 +63,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="ins_form.php" class="sidebar-link active">
+                    <i class="bi bi-basket"></i>
+                    <span style="font-size: 18px;">Ins Forms</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">
                     <i class="bi bi-box-arrow-right"></i>
                     <span style="font-size: 18px;">Logout</span>
@@ -96,17 +107,26 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                 Declined
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="delivered-tab" data-bs-toggle="tab" data-bs-target="#delivered" type="button" role="tab" aria-controls="delivered" aria-selected="false">
+                                Delivered
+                            </button>
+                        </li>
                     </ul>
 
                     <div class="tab-content mt-3" id="requestTabsContent">
                         <div class="tab-pane fade show active" id="approved" role="tabpanel" aria-labelledby="approved-tab">
                             <?php include_once 'logics/request_table.php';
-                            showRequests($requests, 'Delivered'); ?>
+                            showRequests($requests, 'Approved'); ?>
                         </div>
 
                         <div class="tab-pane fade" id="declined" role="tabpanel" aria-labelledby="declined-tab">
                             <?php include_once 'logics/request_table.php';
                             showRequests($requests, 'Cancelled'); ?>
+                        </div>
+                        <div class="tab-pane fade" id="delivered" role="tabpanel" aria-labelledby="declined-tab">
+                            <?php include_once 'logics/request_table.php';
+                            showRequests($requests, 'Delivered'); ?>
                         </div>
                     </div>
                 </div>

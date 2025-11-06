@@ -14,8 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $reason = $_POST['reason'] ?? null;
 
     if ($id && $action === 'approve') {
+        $request->updateStatus($id, 'Approved');
+    } elseif ($id && $action === 'deliver') {
         $request->updateStatus($id, 'Delivered');
-    } elseif ($id && $reason) {
+    } elseif ($id && $status === 'Cancelled' && $reason) {
         $request->updateStatus($id, 'Cancelled', $reason);
     }
 }
@@ -56,6 +58,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 <a href="req_tab.php" class="sidebar-link active">
                     <i class="bi bi-box"></i>
                     <span style="font-size: 18px;">Employee Requests</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="ins_form.php" class="sidebar-link active">
+                    <i class="bi bi-basket"></i>
+                    <span style="font-size: 18px;">Ins Forms</span>
                 </a>
             </li>
             <li class="sidebar-item">
@@ -108,7 +116,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                     $hasPending = false;
                                     if (!empty($requests)):
                                         foreach ($requests as $r):
-                                            if ($r['status'] !== 'Pending') continue;
+
+                                            // ✅ Skip delivered rows — they should not appear
+                                            if (strtolower($r['status']) === 'delivered') continue;
+
                                             $hasPending = true;
                                     ?>
                                             <tr class="text-center">
@@ -119,28 +130,43 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                                 <td><?= htmlspecialchars($r['size']) ?></td>
                                                 <td><?= htmlspecialchars($r['quantity']) ?></td>
                                                 <td><?= htmlspecialchars($r['unit']) ?></td>
+
                                                 <td>
-                                                    <span class="badge bg-secondary px-3 py-2 shadow-sm">Pending</span>
+                                                    <?php if (strtolower($r['status']) === 'pending'): ?>
+                                                        <span class="badge bg-secondary px-3 py-2 shadow-sm">Pending</span>
+                                                    <?php elseif (strtolower($r['status']) === 'approved'): ?>
+                                                        <span class="badge bg-success px-3 py-2 shadow-sm">Approved</span>
+                                                    <?php elseif (strtolower($r['status']) === 'cancelled'): ?>
+                                                        <span class="badge bg-danger px-3 py-2 shadow-sm">Cancelled</span>
+                                                    <?php endif; ?>
                                                 </td>
+
                                                 <td>
-                                                    <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Delivered')" class="btn btn-success btn-sm px-3 shadow-sm">Approve</button>
-                                                    <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Cancelled')" class="btn btn-danger btn-sm px-3 shadow-sm">Decline</button>
+                                                    <?php if (strtolower($r['status']) === 'pending'): ?>
+                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Approved')" class="btn btn-success btn-sm px-3 shadow-sm">Approve</button>
+                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Cancelled')" class="btn btn-danger btn-sm px-3 shadow-sm">Decline</button>
+
+                                                    <?php elseif (strtolower($r['status']) === 'approved'): ?>
+                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Delivered')" class="btn btn-primary btn-sm px-3 shadow-sm">Delivered</button>
+
+                                                    <?php elseif (strtolower($r['status']) === 'cancelled'): ?>
+                                                        <!-- No buttons if cancelled -->
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php
                                         endforeach;
                                     endif;
-
                                     if (!$hasPending): ?>
                                         <tr>
-                                            <td colspan="9" class="text-center text-muted py-3">No pending requests.</td>
+                                            <td colspan="9" class="text-center text-muted py-3">No requests found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
-
                     <nav>
                         <ul class="pagination justify-content-center mt-3" id="pagination"></ul>
                     </nav>
