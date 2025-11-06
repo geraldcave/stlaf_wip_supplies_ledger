@@ -1,8 +1,7 @@
 <?php
 session_start();
 require_once '../../sql/config.php';
-require_once 'logics/items.php';
-
+require_once 'logics/stock_out.php';
 if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'admin') {
     header('Location: ' . BASE_URL . 'index.php');
     exit();
@@ -10,18 +9,13 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'adm
 
 $db = new Database();
 $conn = $db->getConnection();
-$item = new Item($conn);
+$stock = new StockOut($conn);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $saved = $item->addItem(
-        $_POST['description'],
-        $_POST['unit'],
-        $_POST['unit_price'],
-        $_POST['supplier'],
-        $_POST['department'],
-        $_POST['threshold']
-    );
+    $saved = $stock->addStockOut($_POST['item_id'], $_POST['qty_out'], $_POST['remarks']);
 }
 
+$items = $stock->getItems();
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 ?>
 
@@ -31,7 +25,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STLAF | Ins Form Tab</title>
+    <title>STLAF | StockIn Tab</title>
     <link rel="stylesheet" href="../../assets/bootstrap/bootstrap.min.css">
     <link rel="icon" type="image/png" href="../../assets/images/sub_logo_light.png">
     <link rel="stylesheet" href="assets/style.css">
@@ -65,13 +59,13 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <span style="font-size: 18px;">Ins Forms</span>
                 </a>
             </li>
-             <li class="sidebar-item">
+            <li class="sidebar-item">
                 <a href="stock_in.php" class="sidebar-link active">
                     <i class="bi bi-basket"></i>
                     <span style="font-size: 18px;">Stock In</span>
                 </a>
             </li>
-                        <li class="sidebar-item">
+            <li class="sidebar-item">
                 <a href="stock_out.php" class="sidebar-link active">
                     <i class="bi bi-basket"></i>
                     <span style="font-size: 18px;">Stock Out</span>
@@ -98,68 +92,48 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     </span>
                 </div>
             </div>
-
             <div class="container mt-4">
-                <?php if (isset($saved) && $saved): ?>
-                    <div class="alert alert-success fw-bold">✅ Item Added Successfully!</div>
+
+                <?php if (isset($saved) && $saved === true): ?>
+                    <div class="alert alert-success">✅ Stock Out Recorded</div>
+                <?php elseif (isset($saved) && $saved === -1): ?>
+                    <div class="alert alert-warning">⚠️ Not enough stock available!</div>
                 <?php elseif (isset($saved) && !$saved): ?>
-                    <div class="alert alert-danger fw-bold">❌ Failed to Save Item.</div>
+                    <div class="alert alert-danger">❌ Failed to record stock out.</div>
                 <?php endif; ?>
 
-                <div class="card shadow p-4 border-0" style="background:#f7f9fc;">
-                    <h4 class="mb-3 fw-bold" style="color:#123765;">Add New Supply Item</h4>
+                <div class="card shadow p-4 border-0">
+                    <h4 class="fw-bold">Stock Out Form</h4>
 
                     <form method="POST">
-                        <div class="row">
-                            <div class="col-md-6 mb-2">
-                                <label class="form-label fw-bold">Item Description</label>
-                                <input type="text" name="description" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label fw-bold">Unit</label>
-                                <select name="unit" class="form-select" required>
-                                    <option value="REAM">REAM</option>
-                                    <option value="PACK">PACK</option>
-                                    <option value="BOX">BOX</option>
-                                    <option value="PCS">PCS</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label fw-bold">Unit Price</label>
-                                <input type="number" step="0.01" name="unit_price" class="form-control">
-                            </div>
-
-                            <div class="col-md-6 mb-2">
-                                <label class="form-label fw-bold">Supplier</label>
-                                <input type="text" name="supplier" class="form-control">
-                            </div>
-
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label fw-bold">Department</label>
-                                <select name="department" class="form-select">
-                                    <option value="ALL">ALL</option>
-                                    <option value="ADMIN">ADMIN</option>
-                                    <option value="HR">HR</option>
-                                    <option value="ACCOUNTING">ACCOUNTING</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label fw-bold">Threshold (Min Stock)</label>
-                                <input type="number" name="threshold" value="0" class="form-control">
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Select Item</label>
+                            <select name="item_id" class="form-select" required>
+                                <option value="">-- Select Item --</option>
+                                <?php while ($i = $items->fetch_assoc()): ?>
+                                    <option value="<?= $i['id'] ?>">
+                                        <?= $i['description'] ?> (On Hand: <?= $i['qty_on_hand'] ?> <?= $i['unit'] ?>)
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
                         </div>
 
-                        <button class="btn w-100 text-white fw-bold" style="background:#123765;">Save Item</button>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Quantity Out</label>
+                            <input type="number" name="qty_out" min="1" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Remarks</label>
+                            <input type="text" name="remarks" class="form-control">
+                        </div>
+
+                        <button class="btn btn-danger w-100 fw-bold">Save Stock Out</button>
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
-
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="../../assets/bootstrap/all.min.js"></script>
     <script>

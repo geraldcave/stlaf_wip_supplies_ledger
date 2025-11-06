@@ -66,6 +66,18 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <span style="font-size: 18px;">Ins Forms</span>
                 </a>
             </li>
+                         <li class="sidebar-item">
+                <a href="stock_in.php" class="sidebar-link active">
+                    <i class="bi bi-basket"></i>
+                    <span style="font-size: 18px;">Stock In</span>
+                </a>
+            </li>
+                        <li class="sidebar-item">
+                <a href="stock_out.php" class="sidebar-link active">
+                    <i class="bi bi-basket"></i>
+                    <span style="font-size: 18px;">Stock Out</span>
+                </a>
+            </li>
             <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">
                     <i class="bi bi-box-arrow-right"></i>
