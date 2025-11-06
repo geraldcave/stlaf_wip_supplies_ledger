@@ -164,7 +164,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                         <th>Description</th>
                                         <th>Qty</th>
                                         <th>Date</th>
-                                        <th>Remarks</th>
+                                        <th>Department</th>
                                     </tr>
                                 </thead>
                                 <tbody>

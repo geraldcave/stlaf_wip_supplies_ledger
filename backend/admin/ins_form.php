@@ -140,9 +140,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                 <label class="form-label fw-bold">Department</label>
                                 <select name="department" class="form-select">
                                     <option value="ALL">ALL</option>
-                                    <option value="ADMIN">ADMIN</option>
                                     <option value="HR">HR</option>
                                     <option value="ACCOUNTING">ACCOUNTING</option>
+                                    <option value="CORPORATE">CORPORATE</option>
+                                    <option value="MARKETING">MARKETING</option>
+                                    <option value="LITIGATION">LITIGATION</option>
+                                    <option value="I.T">I.T</option>
                                 </select>
                             </div>
 

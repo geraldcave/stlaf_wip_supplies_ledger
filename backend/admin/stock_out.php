@@ -124,7 +124,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Remarks</label>
+                            <label class="form-label fw-bold">Department</label>
                             <input type="text" name="remarks" class="form-control">
                         </div>
 
