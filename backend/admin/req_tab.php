@@ -116,10 +116,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                     $hasPending = false;
                                     if (!empty($requests)):
                                         foreach ($requests as $r):
-
-                                            // ✅ Skip delivered rows — they should not appear
-                                            if (strtolower($r['status']) === 'delivered') continue;
-
+                                            if (in_array(strtolower($r['status']), ['cancelled', 'delivered'])) continue;
                                             $hasPending = true;
                                     ?>
                                             <tr class="text-center">
@@ -134,10 +131,9 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                                 <td>
                                                     <?php if (strtolower($r['status']) === 'pending'): ?>
                                                         <span class="badge bg-secondary px-3 py-2 shadow-sm">Pending</span>
+
                                                     <?php elseif (strtolower($r['status']) === 'approved'): ?>
                                                         <span class="badge bg-success px-3 py-2 shadow-sm">Approved</span>
-                                                    <?php elseif (strtolower($r['status']) === 'cancelled'): ?>
-                                                        <span class="badge bg-danger px-3 py-2 shadow-sm">Cancelled</span>
                                                     <?php endif; ?>
                                                 </td>
 
@@ -148,9 +144,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
                                                     <?php elseif (strtolower($r['status']) === 'approved'): ?>
                                                         <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Delivered')" class="btn btn-primary btn-sm px-3 shadow-sm">Delivered</button>
-
-                                                    <?php elseif (strtolower($r['status']) === 'cancelled'): ?>
-                                                        <!-- No buttons if cancelled -->
                                                     <?php endif; ?>
                                                 </td>
                                             </tr>
@@ -159,11 +152,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                     endif;
                                     if (!$hasPending): ?>
                                         <tr>
-                                            <td colspan="9" class="text-center text-muted py-3">No requests found.</td>
+                                            <td colspan="9" class="text-center text-muted py-3">No requests available.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
-
                             </table>
                         </div>
                     </div>
