@@ -135,13 +135,13 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped align-middle text-center">
-                            <thead class="table-dark">
+                        <table class="table table-bordered align-middle     ">
+                            <thead class="table">
                                 <tr>
                                     <th>Description</th>
-                                    <th>Unit</th>
-                                    <th>On Hand</th>
-                                    <th>Status</th>
+                                    <th class="text-center">Unit</th>
+                                    <th class="text-center">Remaining Stock</th>
+                                    <th class="text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="inventoryTable">
@@ -151,9 +151,9 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                 ?>
                                     <tr class="<?= ($onhand < $threshold) ? 'table-danger' : ''; ?>">
                                         <td><?= $row['description']; ?></td>
-                                        <td><?= $row['unit']; ?></td>
-                                        <td class="fw-bold"><?= $onhand; ?></td>
-                                        <td>
+                                        <td class="text-center"><?= $row['unit']; ?></td>
+                                        <td class="fw-bold text-center"><?= $onhand; ?></td>
+                                        <td class="text-center">
                                             <?php if ($onhand < $threshold): ?>
                                                 <span class="badge bg-danger">LOW STOCK</span>
                                             <?php else: ?>
