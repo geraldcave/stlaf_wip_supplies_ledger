@@ -12,21 +12,37 @@ $db = new Database();
 $conn = $db->getConnection();
 $item = new Item($conn);
 
-$limit = 10;
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+// ✅ Search Input
+$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : "";
+
+// ✅ Pagination Setup
+$limit = isset($_GET['limit']) && $_GET['limit'] > 0 ? (int) $_GET['limit'] : 10;   // Default = 10 rows/page
+$page  = isset($_GET['page']) && $_GET['page'] > 0 ? (int) $_GET['page'] : 1;      // Default = page 1
 $offset = ($page - 1) * $limit;
 
-$totalItems = $conn->query("SELECT COUNT(*) as total FROM items")->fetch_assoc()['total'];
-$totalPages = ceil($totalItems / $limit);
+// ✅ Count total items for pagination
+if ($search !== "") {
+    $countQuery = $conn->query("SELECT COUNT(*) AS total FROM items WHERE description LIKE '%$search%'");
+} else {
+    $countQuery = $conn->query("SELECT COUNT(*) AS total FROM items");
+}
 
-$items = $conn->query("
+$totalItems = $countQuery->fetch_assoc()['total'];
+$totalPages = $totalItems > 0 ? ceil($totalItems / $limit) : 1; // Prevent Division by Zero
+
+// ✅ Fetch paginated items with search
+$query = "
     SELECT * FROM items
+    WHERE description LIKE '%$search%'
     ORDER BY description ASC
     LIMIT $limit OFFSET $offset
-");
+";
+$items = $conn->query($query);
 
+// ✅ Current User Name
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -113,7 +129,9 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3 class="text-primary fw-bold m-0">📦 Inventory Dashboard</h3>
-                        <input type="text" id="searchInput" class="form-control" style="max-width: 280px;" placeholder="🔍 Search item...">
+                        <input type="text" id="searchInput" class="form-control" style="max-width: 280px;"
+                            placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>"
+                            onkeyup="if(event.keyCode == 13) applySearch();">
                     </div>
 
                     <div class="table-responsive">
@@ -152,15 +170,15 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <nav aria-label="Page navigation" class="mt-3">
                         <ul class="pagination justify-content-center">
                             <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                <a class="page-link" href="?page=<?= $page - 1 ?>">Previous</a>
+                                <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page - 1 ?>">Previous</a>
                             </li>
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                 <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
-                                    <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                                    <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $i ?>"><?= $i ?></a>
                                 </li>
                             <?php endfor; ?>
                             <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
-                                <a class="page-link" href="?page=<?= $page + 1 ?>">Next</a>
+                                <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page + 1 ?>">Next</a>
                             </li>
                         </ul>
                     </nav>
@@ -185,6 +203,11 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
             });
         });
+
+        function applySearch() {
+            let val = document.getElementById("searchInput").value;
+            window.location.href = "?search=" + encodeURIComponent(val) + "&page=1";
+        }
     </script>
 </body>
 
