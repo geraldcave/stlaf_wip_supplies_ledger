@@ -32,6 +32,8 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/super.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -73,6 +75,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="inventory_dashboard.php" class="sidebar-link">
+                    <i class="bi bi-speedometer2"></i>
+                    <span style="font-size: 18px;">Supply Tracking</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">
                     <i class="bi bi-box-arrow-right"></i>
                     <span style="font-size: 18px;">Logout</span>
@@ -103,11 +111,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
                 <div class="card shadow p-4 border-0">
                     <h4 class="fw-bold">Stock In Form</h4>
-
                     <form method="POST">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Select Item</label>
-                            <select name="item_id" class="form-select" required>
+                            <select name="item_id" class="form-select select2-item" required>
                                 <option value="">-- Select Item --</option>
                                 <?php while ($row = $items->fetch_assoc()): ?>
                                     <option value="<?= $row['id'] ?>">
@@ -123,8 +130,8 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Department</label>
-                            <input type="text" name="remarks" class="form-control">
+                            <label class="form-label fw-bold">Remarks (Optional)</label>
+                            <input type="text" name="remarks" class="form-control" placeholder="Ex: Restock for Printing Room">
                         </div>
 
                         <button class="btn btn-primary w-100 fw-bold">Save Stock In</button>
@@ -135,10 +142,19 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
     </div>
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="../../assets/bootstrap/all.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         const toggler = document.querySelector(".toggler-btn");
         toggler.addEventListener("click", function() {
             document.querySelector("#sidebar").classList.toggle("collapsed");
+        });
+        $(document).ready(function() {
+            $('.select2-item').select2({
+                placeholder: "Search Item...",
+                width: '100%'
+            });
         });
     </script>
 

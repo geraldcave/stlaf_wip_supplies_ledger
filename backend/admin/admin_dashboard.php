@@ -92,6 +92,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="inventory_dashboard.php" class="sidebar-link">
+                    <i class="bi bi-speedometer2"></i>
+                    <span style="font-size: 18px;">Supply Tracking</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">
                     <i class="bi bi-box-arrow-right"></i>
                     <span style="font-size: 18px;">Logout</span>
