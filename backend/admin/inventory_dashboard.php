@@ -141,7 +141,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                     <th>Description</th>
                                     <th>Unit</th>
                                     <th>On Hand</th>
-                                    <th>Threshold</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -154,7 +153,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                         <td><?= $row['description']; ?></td>
                                         <td><?= $row['unit']; ?></td>
                                         <td class="fw-bold"><?= $onhand; ?></td>
-                                        <td><?= $threshold; ?></td>
                                         <td>
                                             <?php if ($onhand < $threshold): ?>
                                                 <span class="badge bg-danger">LOW STOCK</span>

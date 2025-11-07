@@ -37,131 +37,135 @@ $items = $conn->query("SELECT id, description, unit FROM items ORDER BY descript
 </head>
 
 <body>
-<nav class="navbar px-5 bg-light">
-    <div class="d-flex align-items-center gap-3">
-        <a href="guest.php" class="navbar-brand m-0 p-0">
-            <img src="../../assets/images/official_logo.png" alt="Logo" width="100" height="80">
-        </a>
-        <div class="d-flex gap-2">
-            <a href="guest.php" class="btn btn-outline-primary fw-bold">Request Form</a>
-            <a href="req_list.php" class="btn btn-outline-primary fw-bold">View Requests</a>
+    <nav class="navbar px-5 bg-light">
+        <div class="d-flex align-items-center gap-3">
+            <a href="guest.php" class="navbar-brand m-0 p-0">
+                <img src="../../assets/images/official_logo.png" alt="Logo" width="100" height="80">
+            </a>
+            <div class="d-flex gap-2">
+                <a href="guest.php" class="btn btn-outline-primary fw-bold">Request Form</a>
+                <a href="req_list.php" class="btn btn-outline-primary fw-bold">View Requests</a>
+            </div>
+        </div>
+
+        <div>
+            <a href="../../logout.php"><button class="logout-btn">Logout</button></a>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="card shadow p-4">
+            <h4 class="text-center mb-4">Submit Supply Request</h4>
+
+            <form method="POST">
+
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label">Your Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Department</label>
+                        <select name="department" class="form-select" required>
+                            <option disabled selected>Select department</option>
+                            <option value="all">All Departments</option>
+                            <option value="hr">HR</option>
+                            <option value="accounting">Accounting</option>
+                            <option value="corporate">Corporate</option>
+                            <option value="litigation">Litigation</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="it">IT</option>
+                            <option value="ops">Operations</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ✅ SEARCHABLE ITEM -->
+                <div class="row mb-3 position-relative">
+                    <div class="col">
+                        <label class="form-label">Search Item</label>
+                        <input type="text" id="itemSearch" class="form-control" placeholder="Type to search..." autocomplete="off" required>
+                        <div id="itemList" class="list-group position-absolute w-100"></div>
+                        <input type="hidden" name="item" id="selectedItem">
+                    </div>
+
+                    <div class="col">
+                        <label class="form-label">Product ID</label>
+                        <input type="text" name="product_id" id="productID" class="form-control" readonly>
+                    </div>
+
+                    <div class="col">
+                        <label class="form-label">Unit</label>
+                        <input type="text" name="unit" id="unitField" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" name="quantity" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary w-50">Submit Request</button>
+                </div>
+
+            </form>
         </div>
     </div>
 
-    <div>
-        <a href="../../logout.php"><button class="logout-btn">Logout</button></a>
-    </div>
-</nav>
+    <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
+    <script>
+        const searchInput = document.getElementById("itemSearch");
+        const itemList = document.getElementById("itemList");
+        const selectedItemInput = document.getElementById("selectedItem");
+        const productIDInput = document.getElementById("productID");
+        const unitField = document.getElementById("unitField");
 
-<div class="container mt-5">
-    <div class="card shadow p-4">
-        <h4 class="text-center mb-4">Submit Supply Request</h4>
+        const items = [
+            <?php
+            $first = true;
+            while ($row = $items->fetch_assoc()):
+                if (!$first) echo ",";
+                $first = false;
+            ?> {
+                    id: "<?= $row['id'] ?>",
+                    name: "<?= addslashes($row['description']) ?>",
+                    unit: "<?= $row['unit'] ?>"
+                }
+            <?php endwhile; ?>
+        ];
 
-        <form method="POST">
-
-            <div class="row mb-3">
-                <div class="col">
-                    <label class="form-label">Your Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
-                </div>
-                <div class="col">
-                    <label class="form-label">Department</label>
-                    <select name="department" class="form-select" required>
-                        <option disabled selected>Select department</option>
-                        <option value="all">All Departments</option>
-                        <option value="hr">HR</option>
-                        <option value="accounting">Accounting</option>
-                        <option value="corporate">Corporate</option>
-                        <option value="litigation">Litigation</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="it">IT</option>
-                        <option value="ops">Operations</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- ✅ SEARCHABLE ITEM -->
-            <div class="row mb-3 position-relative">
-                <div class="col">
-                    <label class="form-label">Search Item</label>
-                    <input type="text" id="itemSearch" class="form-control" placeholder="Type to search..." autocomplete="off" required>
-                    <div id="itemList" class="list-group position-absolute w-100"></div>
-                    <input type="hidden" name="item" id="selectedItem">
-                </div>
-
-                <div class="col">
-                    <label class="form-label">Product ID</label>
-                    <input type="text" name="product_id" id="productID" class="form-control" readonly>
-                </div>
-
-                <div class="col">
-                    <label class="form-label">Unit</label>
-                    <input type="text" name="unit" id="unitField" class="form-control" readonly>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col">
-                    <label class="form-label">Quantity</label>
-                    <input type="number" name="quantity" class="form-control" required>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary w-50">Submit Request</button>
-            </div>
-
-        </form>
-    </div>
-</div>
-
-<script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
-
-<script>
-    const searchInput = document.getElementById("itemSearch");
-    const itemList = document.getElementById("itemList");
-    const selectedItemInput = document.getElementById("selectedItem");
-    const productIDInput = document.getElementById("productID");
-    const unitField = document.getElementById("unitField");
-
-    const items = [
-        <?php while ($row = $items->fetch_assoc()): ?>
-        {
-            id: "<?= $row['id'] ?>",
-            name: "<?= addslashes($row['description']) ?>",
-            unit: "<?= $row['unit'] ?>"
-        },
-        <?php endwhile; ?>
-    ];
-
-    searchInput.addEventListener("input", function () {
-        const query = this.value.toLowerCase().trim();
-        itemList.innerHTML = "";
-        if (!query) return;
-
-        const results = items.filter(item => item.name.toLowerCase().includes(query));
-
-        results.forEach(item => {
-            const option = document.createElement("a");
-            option.classList.add("list-group-item", "list-group-item-action");
-            option.textContent = `${item.name} (${item.unit})`;
-            option.onclick = () => {
-                searchInput.value = item.name;
-                selectedItemInput.value = item.name;
-                productIDInput.value = item.id;
-                unitField.value = item.unit;
-                itemList.innerHTML = "";
-            };
-            itemList.appendChild(option);
-        });
-    });
-
-    document.addEventListener("click", (e) => {
-        if (!searchInput.contains(e.target) && !itemList.contains(e.target)) {
+        searchInput.addEventListener("input", function() {
+            const query = this.value.toLowerCase().trim();
             itemList.innerHTML = "";
-        }
-    });
-</script>
+            if (!query) return;
+
+            const results = items.filter(item => item.name.toLowerCase().includes(query));
+
+            results.forEach(item => {
+                const option = document.createElement("a");
+                option.classList.add("list-group-item", "list-group-item-action");
+                option.textContent = `${item.name} (${item.unit})`;
+                option.onclick = () => {
+                    searchInput.value = item.name;
+                    selectedItemInput.value = item.id; // ✅ Now storing ID in hidden input
+                    productIDInput.value = item.id;
+                    unitField.value = item.unit;
+                    itemList.innerHTML = "";
+                };
+                itemList.appendChild(option);
+            });
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!searchInput.contains(e.target) && !itemList.contains(e.target)) {
+                itemList.innerHTML = "";
+            }
+        });
+    </script>
 
 </body>
+
 </html>
