@@ -35,7 +35,7 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     <nav class="navbar px-5 bg-light">
         <div class="d-flex align-items-center gap-3">
             <a href="guest.php" class="navbar-brand m-0 p-0">
-                <img src="../../assets/images/official_logo.png" alt="Logo" width="100" height="80">
+                <img src="../../assets/images/official_logo.png" alt="Logo" width="80" height="80">
             </a>
             <div class="d-flex gap-2">
                 <a href="guest.php" class="btn btn-outline-primary fw-bold">

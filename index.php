@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <nav class="navbar px-5 bg-light">
     <div class="d-flex align-items-center gap-5">
       <a class="navbar-brand m-0 p-0" href="index.php">
-        <img src="assets/images/official_logo.png" alt="Logo" width="100" height="80">
+        <img src="assets/images/official_logo.png" alt="Logo" width="80" height="80">
       </a>
       <h3 class="supply mb-0">WIP Supplies Ledger</h3>
     </div>
