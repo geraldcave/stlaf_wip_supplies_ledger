@@ -20,7 +20,7 @@ function sendSupplyRequestEmail($name, $department, $item, $product_id, $unit, $
         $mail->Port       = 587;
 
         $mail->setFrom('g.cabelin231@gmail.com', 'Supply Request Notice');
-        $mail->addAddress('geraldsolo63@gmail.com');
+        $mail->addAddress('stlaf.hr12@gmail.com');
 
         $mail->isHTML(true);
         $mail->Subject = 'New Supply Request';

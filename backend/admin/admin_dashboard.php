@@ -98,6 +98,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
+                    <span>Configuration</span></a>
+            </li>
+            <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">
                     <i class="bi bi-box-arrow-right"></i>
                     <span style="font-size: 18px;">Logout</span>
