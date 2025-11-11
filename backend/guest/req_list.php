@@ -83,7 +83,6 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
                             <th>#</th>
                             <th>Name</th>
                             <th>Item</th>
-                            <th>Size</th>
                             <th>Quantity</th>
                             <th>Unit</th>
                             <th>Department</th>
@@ -106,7 +105,6 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
                                 <td><?= htmlspecialchars($row['req_id']) ?></td>
                                 <td><?= htmlspecialchars($row['name']) ?></td>
                                 <td><?= htmlspecialchars($row['item']) ?></td>
-                                <td><?= htmlspecialchars($row['size'] ?? '-') ?></td>
                                 <td><?= htmlspecialchars($row['quantity']) ?></td>
                                 <td><?= htmlspecialchars($row['unit']) ?></td>
                                 <td><?= htmlspecialchars($row['department']) ?></td>

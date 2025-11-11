@@ -14,12 +14,12 @@ function sendSupplyRequestEmail($name, $department, $item, $product_id, $unit, $
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'g.cabelin231@gmail.com';
-        $mail->Password   = 'zqtz ztnt lwdo cvrq';
+        $mail->Username   = 'stlaf.it01@gmail.com';
+        $mail->Password   = 'brdw cwog rozs jcvr';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
-        $mail->setFrom('g.cabelin231@gmail.com', 'Supply Request Notice');
+        $mail->setFrom('stlaf.it01@gmail.com', 'Supply Request Notice');
         $mail->addAddress('stlaf.hr12@gmail.com');
 
         $mail->isHTML(true);
