@@ -37,8 +37,8 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 <body>
     <div class="d-flex">
         <aside id="sidebar" class="sidebar-toggle">
-            <div class="sidebar-logo mt-3">
-                <img src="../../assets/images/official_logo.png" width="90px" height="55px">
+             <div class="sidebar-logo mt-3">
+                <img src="../../assets/images/official_logo.png" width="80px" height="80px">
             </div>
             <div class="menu-title">Navigation</div>
 

@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateField'])) {
     <div class="d-flex">
         <aside id="sidebar" class="sidebar-toggle">
             <div class="sidebar-logo mt-3">
-                <img src="../../assets/images/official_logo.png" width="90px" height="55px">
+                <img src="../../assets/images/official_logo.png" width="80px" height="80px">
             </div>
             <div class="menu-title">Navigation</div>
             <li class="sidebar-item">
