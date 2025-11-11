@@ -11,22 +11,23 @@ class Request
         $this->conn = $db;
     }
 
-    public function insertRequest($name, $department, $item, $size, $product_id, $quantity, $unit)
-    {
-        $sql = "INSERT INTO req_form 
-            (name, department, item, size, product_id, quantity, unit, date_req, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'Pending')";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("sssssis", $name, $department, $item, $size, $product_id, $quantity, $unit);
+public function insertRequest($name, $department, $itemName, $size, $product_id, $quantity, $unit)
+{
+    $sql = "INSERT INTO req_form 
+        (name, department, item, size, product_id, quantity, unit, date_req, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'Pending')";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param("sssssis", $name, $department, $itemName, $size, $product_id, $quantity, $unit);
 
-        $executed = $stmt->execute();
+    $executed = $stmt->execute();
 
-        if ($executed) {
-            sendSupplyRequestEmail($name, $department, $item, $product_id, $unit, $quantity);
-        }
-
-        return $executed;
+    if ($executed) {
+        sendSupplyRequestEmail($name, $department, $itemName, $product_id, $unit, $quantity);
     }
+
+    return $executed;
+}
+
 
     public function getAllRequests()
     {
@@ -69,12 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['method'] ?? '') === 'updat
     exit;
 }
 
-// 🟦 Handle Normal Request Submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['method'])) {
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
+    // form submission logic
     $name        = $_POST['name'] ?? '';
     $department  = $_POST['department'] ?? '';
-    $item        = $_POST['item'] ?? '';
+    $itemName    = $_POST['item'] ?? '';
     $size        = $_POST['size'] ?? '';
     $product_id  = $_POST['product_id'] ?? '';
     $quantity    = $_POST['quantity'] ?? 0;
@@ -84,16 +84,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['method'])) {
         $departments = ['HR', 'ACCOUNTING', 'CORPORATE', 'OPS', 'LITIGATION', 'MARKETING', 'IT'];
         $ok = true;
         foreach ($departments as $dept) {
-            if (!$request->insertRequest($name, $dept, $item, $size, $product_id, $quantity, $unit)) {
+            if (!$request->insertRequest($name, $dept, $itemName, $size, $product_id, $quantity, $unit)) {
                 $ok = false;
             }
         }
         echo "<script>alert('" . ($ok ? "Requests submitted to all departments and emails sent!" : "Some requests failed.") . "');</script>";
     } else {
-        if ($request->insertRequest($name, $department, $item, $size, $product_id, $quantity, $unit)) {
+        if ($request->insertRequest($name, $department, $itemName, $size, $product_id, $quantity, $unit)) {
             echo "<script>alert('Request submitted and email sent successfully!');</script>";
         } else {
             echo "<script>alert('Failed to submit request.');</script>";
         }
     }
+
+    // Redirect to prevent form resubmission on refresh/login
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
+
