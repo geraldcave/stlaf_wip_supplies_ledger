@@ -128,7 +128,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 <div class="card shadow-lg border-0 p-4 rounded-4">
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="text-primary fw-bold m-0">📦 Inventory Dashboard</h3>
+                        <h3 class="text-primary fw-bold m-0">📦 Supply Tracker</h3>
                         <input type="text" id="searchInput" class="form-control" style="max-width: 280px;"
                             placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>"
                             onkeyup="if(event.keyCode == 13) applySearch();">

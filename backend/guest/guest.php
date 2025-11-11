@@ -56,7 +56,6 @@ $items = $conn->query("SELECT id, description, unit FROM items ORDER BY descript
     <div class="container mt-5">
         <div class="card shadow p-4">
             <h4 class="text-center mb-4">Submit Supply Request</h4>
-
             <form method="POST">
 
                 <div class="row mb-3">
@@ -80,7 +79,6 @@ $items = $conn->query("SELECT id, description, unit FROM items ORDER BY descript
                     </div>
                 </div>
 
-                <!-- ✅ SEARCHABLE ITEM -->
                 <div class="row mb-3 position-relative">
                     <div class="col">
                         <label class="form-label">Search Item</label>
@@ -110,7 +108,6 @@ $items = $conn->query("SELECT id, description, unit FROM items ORDER BY descript
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary w-50">Submit Request</button>
                 </div>
-
             </form>
         </div>
     </div>
