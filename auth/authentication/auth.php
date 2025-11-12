@@ -55,7 +55,7 @@ class User
         $_SESSION['username'] = 'employee'; 
         $_SESSION['department'] = 'employee'; 
 
-        header("Location: backend/guest/guest.php");
+        header("Location: backend/guest/guest_dashboard.php");
         exit();
     }
 

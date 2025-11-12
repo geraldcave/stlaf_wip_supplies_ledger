@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once '../../sql/config.php';
 require_once '../../auth/oop/request_form.php';
 
@@ -32,29 +31,8 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 </head>
 
 <body>
-    <nav class="navbar px-5 bg-light">
-        <div class="d-flex align-items-center gap-3">
-            <a href="guest.php" class="navbar-brand m-0 p-0">
-                <img src="../../assets/images/official_logo.png" alt="Logo" width="80" height="80">
-            </a>
-            <div class="d-flex gap-2">
-                <a href="guest.php" class="btn btn-outline-primary fw-bold">
-                    Request Form
-                </a>
-                <a href="req_list.php" class="btn btn-outline-primary fw-bold">
-                    View Requests
-                </a>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-end align-items-center gap-3">
-            <a href="../../logout.php">
-                <button class="logout-btn">Logout</button>
-            </a>
-        </div>
-    </nav>
-    <div class="container mt-5">
-        <div class="card shadow p-4">
+    <div class="container mt-2">
+        <div class="card shadow p-4" style="height:85vh">
             <h4 class="text-center mb-4">All Requests</h4>
             <div class="d-flex justify-content-end mb-3">
                 <input type="text" id="searchInput" class="form-control w-25" placeholder="🔍 Search request...">

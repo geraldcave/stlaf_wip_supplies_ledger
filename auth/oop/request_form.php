@@ -11,22 +11,22 @@ class Request
         $this->conn = $db;
     }
 
-public function insertRequest($name, $department, $itemName, $size, $product_id, $quantity, $unit)
-{
-    $sql = "INSERT INTO req_form 
+    public function insertRequest($name, $department, $itemName, $size, $product_id, $quantity, $unit)
+    {
+        $sql = "INSERT INTO req_form 
         (name, department, item, size, product_id, quantity, unit, date_req, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'Pending')";
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("sssssis", $name, $department, $itemName, $size, $product_id, $quantity, $unit);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("sssssis", $name, $department, $itemName, $size, $product_id, $quantity, $unit);
 
-    $executed = $stmt->execute();
+        $executed = $stmt->execute();
 
-    if ($executed) {
-        sendSupplyRequestEmail($name, $department, $itemName, $product_id, $unit, $quantity);
+        if ($executed) {
+            sendSupplyRequestEmail($name, $department, $itemName, $product_id, $unit, $quantity);
+        }
+
+        return $executed;
     }
-
-    return $executed;
-}
 
 
     public function getAllRequests()
@@ -74,31 +74,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
     // form submission logic
     $name        = $_POST['name'] ?? '';
     $department  = $_POST['department'] ?? '';
-    $itemName    = $_POST['item'] ?? '';
-    $size        = $_POST['size'] ?? '';
-    $product_id  = $_POST['product_id'] ?? '';
-    $quantity    = $_POST['quantity'] ?? 0;
-    $unit        = $_POST['unit'] ?? '';
+    $items       = $_POST['item'] ?? [];
+    $sizes       = $_POST['size'] ?? [];
+    $product_ids = $_POST['product_id'] ?? [];
+    $quantities  = $_POST['quantity'] ?? [];
+    $units       = $_POST['unit'] ?? [];
+
+    // ensure all arrays have the same length
+    $count = count($items);
 
     if ($department === "all") {
         $departments = ['HR', 'ACCOUNTING', 'CORPORATE', 'OPS', 'LITIGATION', 'MARKETING', 'IT'];
         $ok = true;
         foreach ($departments as $dept) {
-            if (!$request->insertRequest($name, $dept, $itemName, $size, $product_id, $quantity, $unit)) {
-                $ok = false;
+            for ($i = 0; $i < $count; $i++) {
+                $itemName = $items[$i];
+                $size = $sizes[$i] ?? '';
+                $product_id = $product_ids[$i];
+                $quantity = $quantities[$i];
+                $unit = $units[$i];
+
+                if (!$request->insertRequest($name, $dept, $itemName, $size, $product_id, $quantity, $unit)) {
+                    $ok = false;
+                }
             }
         }
         echo "<script>alert('" . ($ok ? "Requests submitted to all departments and emails sent!" : "Some requests failed.") . "');</script>";
     } else {
-        if ($request->insertRequest($name, $department, $itemName, $size, $product_id, $quantity, $unit)) {
-            echo "<script>alert('Request submitted and email sent successfully!');</script>";
-        } else {
-            echo "<script>alert('Failed to submit request.');</script>";
+        $ok = true;
+        for ($i = 0; $i < $count; $i++) {
+            $itemName = $items[$i];
+            $size = $sizes[$i] ?? '';
+            $product_id = $product_ids[$i];
+            $quantity = $quantities[$i];
+            $unit = $units[$i];
+
+            if (!$request->insertRequest($name, $department, $itemName, $size, $product_id, $quantity, $unit)) {
+                $ok = false;
+            }
         }
+
+        echo "<script>alert('" . ($ok ? "Request submitted and email sent successfully!" : "Failed to submit one or more requests.") . "');</script>";
     }
 
-    // Redirect to prevent form resubmission on refresh/login
+    // Redirect to prevent form resubmission
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
-
