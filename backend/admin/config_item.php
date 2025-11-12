@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateField'])) {
             <div style="width:95%; margin:20px auto; background:#f8f9fa; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                 <div class="card shadow-lg border-0 p-4 rounded-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="text-primary fw-bold m-0">📦 Supply Tracker</h3>
+                        <h3 class="text-primary fw-bold m-0">Configuration</h3>
                         <input type="text" id="searchInput" class="form-control" style="max-width:280px;"
                             placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>" onkeyup="if(event.keyCode==13) applySearch();">
                     </div>
@@ -149,7 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateField'])) {
                                     <th>Description</th>
                                     <th class="text-center">Unit</th>
                                     <th class="text-center">Remaining Stock</th>
-                                    <th class="text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="inventoryTable">
@@ -167,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateField'])) {
                                             </select>
                                         </td>
                                         <td class="text-center"><input type="number" class="editable-input" data-id="<?= $row['id'] ?>" data-field="qty_on_hand" value="<?= $onhand ?>" min="0"></td>
-                                        <td class="text-center"><span class="badge <?= ($onhand < $threshold) ? 'bg-danger' : 'bg-success' ?>"><?= ($onhand < $threshold) ? 'LOW STOCK' : 'OK' ?></span></td>
+                                        
                                     </tr>
                                 <?php endwhile; ?>
                             </tbody>
