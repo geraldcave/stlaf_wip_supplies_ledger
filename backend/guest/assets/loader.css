@@ -91,3 +91,7 @@ body {
   border-radius: 0.25rem;
   z-index: 1000;
 }
+
+.custom-btn {
+  color: #123765 !important;
+}

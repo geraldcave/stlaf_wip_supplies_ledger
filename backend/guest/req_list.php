@@ -62,14 +62,14 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
                 <table class="table table-bordered table-hover text-center align-middle" id="requestsTable">
                     <thead class="table-primary">
                         <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                            <th>Unit</th>
-                            <th>Department</th>
-                            <th>Status</th>
-                            <th>Date Requested</th>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Item</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-center">Unit</th>
+                            <th class="text-center">Department</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Date Requested</th>
                         </tr>
                     </thead>
                     <tbody>

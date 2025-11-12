@@ -114,7 +114,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 <?php endif; ?>
 
                 <div class="card shadow p-4 border-0">
-                    <h4 class="fw-bold">Stock Out Form</h4>
+                    <h4 class="fw-bold"style="color: #123765 !important;">Stock Out Form</h4>
                     <form method="POST">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Select Item</label>
@@ -138,7 +138,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                             <input type="text" name="remarks" class="form-control">
                         </div>
 
-                        <button class="btn btn-danger w-100 fw-bold">Save Stock Out</button>
+                        <button class="btn w-100 fw-bold" style="background-color: #123765 !important; color: white !important;">Save Stock Out</button>
                     </form>
                 </div>
             </div>

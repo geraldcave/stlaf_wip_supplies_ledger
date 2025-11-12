@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateField'])) {
             <div style="width:95%; margin:20px auto; background:#f8f9fa; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                 <div class="card shadow-lg border-0 p-4 rounded-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="text-primary fw-bold m-0">Configuration</h3>
+                        <h3 class="fw-bold m-0">Configuration</h3>
                         <input type="text" id="searchInput" class="form-control" style="max-width:280px;"
                             placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>" onkeyup="if(event.keyCode==13) applySearch();">
                     </div>

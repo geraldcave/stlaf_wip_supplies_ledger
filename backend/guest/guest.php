@@ -82,11 +82,11 @@ $items = $conn->query("SELECT id, description, unit FROM items ORDER BY descript
                         <table class="table table-bordered" id="itemsTable">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Item Name</th>
-                                    <th>Product ID</th>
-                                    <th>Quantity</th>
-                                    <th>Unit</th>
-                                    <th style="width:50px">Remove</th>
+                                    <th class="text-center">Item Name</th>
+                                    <th class="text-center">Product ID</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-center">Unit</th>
+                                    <th class="text-center" style="width:50px">Remove</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -95,7 +95,7 @@ $items = $conn->query("SELECT id, description, unit FROM items ORDER BY descript
                 </div>
                 <div class="d-flex justify-content-end gap-2 mt-2">
                     <button type="button" class="btn btn-outline-secondary" id="cancelBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary px-5">Submit Request</button>
+                    <button type="submit" class="btn custom-btn px-5" style="background-color: #123765 !important; color: white !important  ;">Submit Request</button>
                 </div>
             </form>
         </div>
