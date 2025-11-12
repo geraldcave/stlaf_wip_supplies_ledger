@@ -11,7 +11,7 @@ class Request
         $this->conn = $db;
     }
 
-    public function insertRequest($name, $department, $itemName, $size, $product_id, $quantity, $unit)
+    public function insertRequest($name, $department, $itemName, $size, $product_id, $quantity, $unit, $sendEmail = true)
     {
         $sql = "INSERT INTO req_form 
         (name, department, item, size, product_id, quantity, unit, date_req, status)
@@ -21,12 +21,14 @@ class Request
 
         $executed = $stmt->execute();
 
-        if ($executed) {
-            sendSupplyRequestEmail($name, $department, $itemName, $product_id, $unit, $quantity);
+        // ✅ Only send email if $sendEmail is true
+        if ($executed && $sendEmail) {
+            sendSupplyRequestEmail($name, $department, $itemName, $product_id, $quantity, $unit);
         }
 
         return $executed;
     }
+
 
 
     public function getAllRequests()
@@ -82,24 +84,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
 
     // ensure all arrays have the same length
     $count = count($items);
-
     if ($department === "all") {
         $departments = ['HR', 'ACCOUNTING', 'CORPORATE', 'OPS', 'LITIGATION', 'MARKETING', 'IT'];
         $ok = true;
-        foreach ($departments as $dept) {
-            for ($i = 0; $i < $count; $i++) {
-                $itemName = $items[$i];
-                $size = $sizes[$i] ?? '';
-                $product_id = $product_ids[$i];
-                $quantity = $quantities[$i];
-                $unit = $units[$i];
 
-                if (!$request->insertRequest($name, $dept, $itemName, $size, $product_id, $quantity, $unit)) {
+        for ($i = 0; $i < $count; $i++) {
+            $itemName = $items[$i];
+            $size = $sizes[$i] ?? '';
+            $product_id = $product_ids[$i];
+            $quantity = $quantities[$i];
+            $unit = $units[$i];
+
+            // Insert into DB for each department, but do NOT send email
+            foreach ($departments as $dept) {
+                if (!$request->insertRequest($name, $dept, $itemName, $size, $product_id, $quantity, $unit, false)) {
                     $ok = false;
                 }
             }
         }
-        echo "<script>alert('" . ($ok ? "Requests submitted to all departments and emails sent!" : "Some requests failed.") . "');</script>";
+
+        // ✅ Send ONE email after all inserts
+        sendSupplyRequestEmail(
+            $name,
+            "ALL DEPARTMENTS",
+            implode(", ", $items),
+            implode(", ", $product_ids),
+            implode(", ", $quantities),
+            implode(", ", $units)
+        );
+
+        echo "<script>alert('" . ($ok ? "Requests submitted to all departments and email sent!" : "Some requests failed.") . "');</script>";
     } else {
         $ok = true;
         for ($i = 0; $i < $count; $i++) {

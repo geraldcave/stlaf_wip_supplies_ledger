@@ -33,27 +33,31 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 <body>
     <div class="container mt-2">
         <div class="card shadow p-4" style="height:85vh">
-            <h4 class="text-center mb-4">All Requests</h4>
-            <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-between">
+                <h4 class="text-center mb-4">All Requests</h4>
                 <input type="text" id="searchInput" class="form-control w-25" placeholder="🔍 Search request...">
             </div>
-            <ul class="nav nav-tabs mb-4" id="requestTabs">
-                <li class="nav-item">
-                    <button class="nav-link active" data-status="all">All</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-status="Pending">Pending</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-status="Approved">Approved</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-status="Cancelled">Declined</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-status="Delivered">Delivered</button>
-                </li>
-            </ul>
+            <div class="row mb-3">
+                <div class="col text-end">
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-sm btn-outline-primary dropdown-toggle fw-semibold px-2 py-1"
+                            type="button"
+                            id="statusDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            style="min-width: 100px;">
+                            Filter: <span id="selectedStatus">All</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="statusDropdown">
+                            <li><button class="dropdown-item active" data-status="all">All</button></li>
+                            <li><button class="dropdown-item" data-status="Pending">Pending</button></li>
+                            <li><button class="dropdown-item" data-status="Approved">Approved</button></li>
+                            <li><button class="dropdown-item" data-status="Cancelled">Declined</button></li>
+                            <li><button class="dropdown-item" data-status="Delivered">Delivered</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                 <table class="table table-bordered table-hover text-center align-middle" id="requestsTable">
                     <thead class="table-primary">
@@ -112,8 +116,9 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
             </div>
         </div>
     </div>
-
+    <script src="../../assets/bootstrap/bootstrap.bundle.js"></script>
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/bootstrap/all.min.js"></script>
     <script src="assets/re.js"></script>
 </body>
 

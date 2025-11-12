@@ -55,8 +55,9 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
         </div>
     </div>
 
+    <script src="../../assets/bootstrap/bootstrap.bundle.js"></script>
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="assets/re.js"></script>
+    <script src="../../assets/bootstrap/all.min.js"></script>
 </body>
 
 </html>

@@ -1,46 +1,39 @@
- const tabs = document.querySelectorAll('#requestTabs .nav-link');
-        const rows = document.querySelectorAll('#requestsTable tbody tr');
-        const searchInput = document.getElementById('searchInput');
+document.addEventListener('DOMContentLoaded', function () {
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    const tableRows = document.querySelectorAll('#requestsTable tbody tr');
+    const searchInput = document.getElementById('searchInput');
+    const selectedStatusText = document.getElementById('selectedStatus');
 
-        let activeFilter = 'all';
+    // 🔹 Dropdown click handler
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function () {
+            // Remove active state from all dropdown items
+            dropdownItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
 
-        // 🔹 Handle tab filtering
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                activeFilter = tab.dataset.status.toLowerCase();
-                filterRows();
-            });
+            const status = this.getAttribute('data-status').toLowerCase();
+            selectedStatusText.textContent = this.textContent;
+
+            filterTable(status, searchInput.value.toLowerCase());
         });
+    });
 
-        // 🔹 Handle search
-        searchInput.addEventListener('keyup', () => filterRows());
+    // 🔹 Search handler
+    searchInput.addEventListener('input', function () {
+        const searchText = this.value.toLowerCase();
+        const activeItem = document.querySelector('.dropdown-item.active');
+        const status = activeItem ? activeItem.getAttribute('data-status').toLowerCase() : 'all';
+        filterTable(status, searchText);
+    });
 
-        function filterRows() {
-            const searchValue = searchInput.value.toLowerCase();
-
-            rows.forEach(row => {
-                const rowStatus = row.dataset.status.toLowerCase();
-                const rowText = row.textContent.toLowerCase();
-
-                const matchesStatus = (activeFilter === 'all' || rowStatus === activeFilter);
-                const matchesSearch = rowText.includes(searchValue);
-
-                row.style.display = (matchesStatus && matchesSearch) ? '' : 'none';
-            });
-
-            // 🟡 Optional: Show message if no results
-            const visibleRows = [...rows].some(r => r.style.display === '');
-            if (!visibleRows) {
-                if (!document.getElementById('noResultsRow')) {
-                    const noRow = document.createElement('tr');
-                    noRow.id = 'noResultsRow';
-                    noRow.innerHTML = `<td colspan="9" class="text-center text-muted py-4">No matching requests found.</td>`;
-                    document.querySelector('#requestsTable tbody').appendChild(noRow);
-                }
-            } else {
-                const noRow = document.getElementById('noResultsRow');
-                if (noRow) noRow.remove();
-            }
-        }
+    // 🔹 Combined filter (status + search)
+    function filterTable(status, searchText = '') {
+        tableRows.forEach(row => {
+            const rowStatus = row.getAttribute('data-status').toLowerCase();
+            const text = row.textContent.toLowerCase();
+            const matchesStatus = (status === 'all' || rowStatus === status);
+            const matchesSearch = text.includes(searchText);
+            row.style.display = matchesStatus && matchesSearch ? '' : 'none';
+        });
+    }
+});

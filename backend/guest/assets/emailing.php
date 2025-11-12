@@ -5,9 +5,10 @@ use PHPMailer\PHPMailer\Exception;
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
-function sendSupplyRequestEmail($name, $department, $item, $product_id, $unit, $quantity)
+function sendSupplyRequestEmail($name, $department, $items, $product_ids, $quantities, $units)
 {
     $department = strtoupper($department);
+
     $mail = new PHPMailer(true);
 
     try {
@@ -15,7 +16,7 @@ function sendSupplyRequestEmail($name, $department, $item, $product_id, $unit, $
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'stlaf.it01@gmail.com';
-        $mail->Password   = 'brdw cwog rozs jcvr';
+        $mail->Password   = 'ydzx yaii jqif pzza';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
@@ -25,14 +26,41 @@ function sendSupplyRequestEmail($name, $department, $item, $product_id, $unit, $
         $mail->isHTML(true);
         $mail->Subject = 'New Supply Request';
 
+        // Split comma-separated strings into arrays
+        $itemsArr       = explode(", ", $items);
+        $productIdsArr  = explode(", ", $product_ids);
+        $quantitiesArr  = explode(", ", $quantities);
+        $unitsArr       = explode(", ", $units);
+
+        // Build table rows
+        $tableRows = '';
+        for ($i = 0; $i < count($itemsArr); $i++) {
+            $tableRows .= "<tr style='text-align:center;'>
+                <td style='padding:5px;border:1px solid #ccc;'>{$itemsArr[$i]}</td>
+                <td style='padding:5px;border:1px solid #ccc;'>{$productIdsArr[$i]}</td>
+                <td style='padding:5px;border:1px solid #ccc;'>{$quantitiesArr[$i]}</td>
+                <td style='padding:5px;border:1px solid #ccc;'>{$unitsArr[$i]}</td>
+            </tr>";
+        }
+
+        // Email body
         $mail->Body = "
             <h3>Supply Request Submitted</h3>
-            <p><strong>Name:</strong> $name</p>
-            <p><strong>Department:</strong> $department</p>
-            <p><strong>Item:</strong> $item</p>
-            <p><strong>Product ID:</strong> $product_id</p>
-            <p><strong>Unit:</strong> $unit</p>
-            <p><strong>Quantity:</strong> $quantity</p>
+            <p><strong>Name:</strong> {$name}</p>
+            <p><strong>Department:</strong> {$department}</p>
+            <table style='border-collapse:collapse;width:100%;margin-top:10px;'>
+                <thead>
+                    <tr style='background-color:#f2f2f2;text-align:center;'>
+                        <th style='padding:8px;border:1px solid #ccc;'>Item</th>
+                        <th style='padding:8px;border:1px solid #ccc;'>Product ID</th>
+                        <th style='padding:8px;border:1px solid #ccc;'>Quantity</th>
+                        <th style='padding:8px;border:1px solid #ccc;'>Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {$tableRows}
+                </tbody>
+            </table>
         ";
 
         $mail->send();
