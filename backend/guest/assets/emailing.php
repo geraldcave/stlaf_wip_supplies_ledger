@@ -26,13 +26,12 @@ function sendSupplyRequestEmail($name, $department, $items, $product_ids, $quant
         $mail->isHTML(true);
         $mail->Subject = 'New Supply Request';
 
-        // Split comma-separated strings into arrays
+
         $itemsArr       = explode(", ", $items);
         $productIdsArr  = explode(", ", $product_ids);
         $quantitiesArr  = explode(", ", $quantities);
         $unitsArr       = explode(", ", $units);
 
-        // Build table rows
         $tableRows = '';
         for ($i = 0; $i < count($itemsArr); $i++) {
             $tableRows .= "<tr style='text-align:center;'>
