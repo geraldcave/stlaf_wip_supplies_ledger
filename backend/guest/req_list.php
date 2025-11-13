@@ -16,6 +16,8 @@ $request = new Request($conn);
 $sql = "SELECT * FROM req_form ORDER BY date_req DESC";
 $result = $conn->query($sql);
 $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+$deptResult = $conn->query("SELECT DISTINCT department FROM req_form ORDER BY department ASC");
+$departments = $deptResult ? $deptResult->fetch_all(MYSQLI_ASSOC) : [];
 ?>
 
 <!DOCTYPE html>
@@ -42,18 +44,21 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
                     <div class="dropdown d-inline-block">
                         <button class="btn btn-sm btn-outline-primary dropdown-toggle fw-semibold px-2 py-1"
                             type="button"
-                            id="statusDropdown"
+                            id="departmentDropdown"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
-                            style="min-width: 100px;">
-                            Filter: <span id="selectedStatus">All</span>
+                            style="min-width: 140px;">
+                            Filter: <span id="selectedDepartment">All</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="statusDropdown">
-                            <li><button class="dropdown-item active" data-status="all">All</button></li>
-                            <li><button class="dropdown-item" data-status="Pending">Pending</button></li>
-                            <li><button class="dropdown-item" data-status="Approved">Approved</button></li>
-                            <li><button class="dropdown-item" data-status="Cancelled">Declined</button></li>
-                            <li><button class="dropdown-item" data-status="Delivered">Delivered</button></li>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="departmentDropdown">
+                            <li><button class="dropdown-item active" data-department="all">All</button></li>
+                            <?php foreach ($departments as $dept): ?>
+                                <li>
+                                    <button class="dropdown-item" data-department="<?= htmlspecialchars($dept['department']) ?>">
+                                        <?= htmlspecialchars(ucfirst($dept['department'])) ?>
+                                    </button>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
                     </div>
                 </div>
@@ -83,7 +88,7 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
                                 default => 'status-pending'
                             };
                             ?>
-                            <tr data-status="<?= htmlspecialchars($status) ?>">
+                            <tr data-department="<?= htmlspecialchars($row['department']) ?>"> 
                                 <td><?= htmlspecialchars($row['req_id']) ?></td>
                                 <td><?= htmlspecialchars($row['name']) ?></td>
                                 <td><?= htmlspecialchars($row['item']) ?></td>

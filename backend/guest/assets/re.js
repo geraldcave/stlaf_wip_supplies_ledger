@@ -1,39 +1,37 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const dropdownItems = document.querySelectorAll('.dropdown-item');
-    const tableRows = document.querySelectorAll('#requestsTable tbody tr');
-    const searchInput = document.getElementById('searchInput');
-    const selectedStatusText = document.getElementById('selectedStatus');
+document.addEventListener("DOMContentLoaded", function () {
+  const dropdownItems = document.querySelectorAll(".dropdown-item");
+  const tableRows = document.querySelectorAll("#requestsTable tbody tr");
+  const searchInput = document.getElementById("searchInput");
+  const selectedDepartmentText = document.getElementById("selectedDepartment");
 
-    // 🔹 Dropdown click handler
-    dropdownItems.forEach(item => {
-        item.addEventListener('click', function () {
-            // Remove active state from all dropdown items
-            dropdownItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
+  dropdownItems.forEach((item) => {
+    item.addEventListener("click", function () {
+      dropdownItems.forEach((i) => i.classList.remove("active"));
+      this.classList.add("active");
 
-            const status = this.getAttribute('data-status').toLowerCase();
-            selectedStatusText.textContent = this.textContent;
+      const department = this.getAttribute("data-department").toLowerCase();
+      selectedDepartmentText.textContent = this.textContent;
 
-            filterTable(status, searchInput.value.toLowerCase());
-        });
+      filterTable(department, searchInput.value.toLowerCase());
     });
+  });
 
-    // 🔹 Search handler
-    searchInput.addEventListener('input', function () {
-        const searchText = this.value.toLowerCase();
-        const activeItem = document.querySelector('.dropdown-item.active');
-        const status = activeItem ? activeItem.getAttribute('data-status').toLowerCase() : 'all';
-        filterTable(status, searchText);
+  searchInput.addEventListener("input", function () {
+    const searchText = this.value.toLowerCase();
+    const activeItem = document.querySelector(".dropdown-item.active");
+    const department = activeItem
+      ? activeItem.getAttribute("data-department").toLowerCase()
+      : "all";
+    filterTable(department, searchText);
+  });
+
+  function filterTable(department, searchText = "") {
+    tableRows.forEach((row) => {
+      const rowDept = row.getAttribute("data-department").toLowerCase();
+      const text = row.textContent.toLowerCase();
+      const matchesDept = department === "all" || rowDept === department;
+      const matchesSearch = text.includes(searchText);
+      row.style.display = matchesDept && matchesSearch ? "" : "none";
     });
-
-    // 🔹 Combined filter (status + search)
-    function filterTable(status, searchText = '') {
-        tableRows.forEach(row => {
-            const rowStatus = row.getAttribute('data-status').toLowerCase();
-            const text = row.textContent.toLowerCase();
-            const matchesStatus = (status === 'all' || rowStatus === status);
-            const matchesSearch = text.includes(searchText);
-            row.style.display = matchesStatus && matchesSearch ? '' : 'none';
-        });
-    }
+  }
 });
