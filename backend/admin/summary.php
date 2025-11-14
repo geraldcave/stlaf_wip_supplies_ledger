@@ -45,15 +45,14 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
         }
 
         #chart-container {
-            height: 150vh;
+            height: 70vh;
+            max-height: 70vh;
             overflow-y: auto;
-            position: relative;
         }
 
         #stockOutChart {
-            display: block !important;
-            height: auto !important;
-            max-width: 100%;
+            display: block;
+            width: 100% !important;
         }
     </style>
 </head>
@@ -138,6 +137,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <canvas id="stockOutChart"></canvas>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -148,4 +148,5 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
     </script>
     <script src="assets/sum.js"></script>
 </body>
+
 </html>
