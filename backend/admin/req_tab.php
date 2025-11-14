@@ -115,7 +115,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                         <th>Request ID</th>
                                         <th>Name</th>
                                         <th>Department</th>
-                                        <th>Item</th>
                                         <th>Size</th>
                                         <th>Quantity</th>
                                         <th>Unit</th>
@@ -136,7 +135,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                                 <td><?= htmlspecialchars($r['name']) ?></td>
                                                 <td><?= ucfirst($r['department']) ?></td>
                                                 <td><?= htmlspecialchars($r['item']) ?></td>
-                                                <td><?= htmlspecialchars($r['size']) ?></td>
                                                 <td><?= htmlspecialchars($r['quantity']) ?></td>
                                                 <td><?= htmlspecialchars($r['unit']) ?></td>
 

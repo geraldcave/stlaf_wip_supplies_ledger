@@ -45,7 +45,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
         }
 
         #chart-container {
-            height: 180vh;
+            height: 150vh;
             overflow-y: auto;
             position: relative;
         }
