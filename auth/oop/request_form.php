@@ -18,18 +18,14 @@ class Request
         VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'Pending')";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("sssssis", $name, $department, $itemName, $size, $product_id, $quantity, $unit);
-
         $executed = $stmt->execute();
 
-        // ✅ Only send email if $sendEmail is true
         if ($executed && $sendEmail) {
             sendSupplyRequestEmail($name, $department, $itemName, $product_id, $quantity, $unit);
         }
 
         return $executed;
     }
-
-
 
     public function getAllRequests()
     {
@@ -43,7 +39,34 @@ class Request
         $sql = "UPDATE req_form SET status = ?, cancel_reason = ? WHERE req_id = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ssi", $status, $cancel_reason, $req_id);
-        return $stmt->execute();
+        $result = $stmt->execute();
+
+        if ($result && $status === "Delivered") {
+            $sql2 = "SELECT product_id, quantity, item FROM req_form WHERE req_id = ?";
+            $stmt2 = $this->conn->prepare($sql2);
+            $stmt2->bind_param("i", $req_id);
+            $stmt2->execute();
+            $info = $stmt2->get_result()->fetch_assoc();
+
+            $item_id = $info['product_id'];
+            $qty_out = $info['quantity'];
+            $item_name = $info['item'];
+
+            // Deduct qty from items table
+            $sql3 = "UPDATE items SET qty_on_hand = qty_on_hand - ? WHERE id = ?";
+            $stmt3 = $this->conn->prepare($sql3);
+            $stmt3->bind_param("ii", $qty_out, $item_id);
+            $stmt3->execute();
+
+            // Insert into stock_out
+            $remarks = "Delivered from request ID #$req_id ($item_name)";
+            $sql4 = "INSERT INTO stock_out (item_id, qty_out, date_out, remarks) VALUES (?, ?, CURRENT_TIMESTAMP, ?)";
+            $stmt4 = $this->conn->prepare($sql4);
+            $stmt4->bind_param("iis", $item_id, $qty_out, $remarks);
+            $stmt4->execute();
+        }
+
+        return $result;
     }
 }
 
@@ -51,7 +74,6 @@ $db = new Database();
 $conn = $db->getConnection();
 $request = new Request($conn);
 
-// 🟩 Handle AJAX Status Update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['method'] ?? '') === 'updateStatus') {
     header('Content-Type: application/json');
 
@@ -73,7 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['method'] ?? '') === 'updat
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
-    // form submission logic
     $name        = $_POST['name'] ?? '';
     $department  = $_POST['department'] ?? '';
     $items       = $_POST['item'] ?? [];
@@ -82,8 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
     $quantities  = $_POST['quantity'] ?? [];
     $units       = $_POST['unit'] ?? [];
 
-    // ensure all arrays have the same length
     $count = count($items);
+
     if ($department === "all") {
         $departments = ['HR', 'ACCOUNTING', 'CORPORATE', 'OPS', 'LITIGATION', 'MARKETING', 'IT'];
         $ok = true;
@@ -95,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
             $quantity = $quantities[$i];
             $unit = $units[$i];
 
-            // Insert into DB for each department, but do NOT send email
             foreach ($departments as $dept) {
                 if (!$request->insertRequest($name, $dept, $itemName, $size, $product_id, $quantity, $unit, false)) {
                     $ok = false;
@@ -103,7 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
             }
         }
 
-        // ✅ Send ONE email after all inserts
         sendSupplyRequestEmail(
             $name,
             "ALL DEPARTMENTS",
@@ -112,8 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
             implode(", ", $quantities),
             implode(", ", $units)
         );
-
-        echo "<script>alert('" . ($ok ? "Requests submitted to all departments and email sent!" : "Some requests failed.") . "');</script>";
     } else {
         $ok = true;
         for ($i = 0; $i < $count; $i++) {
@@ -127,11 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['method'])) {
                 $ok = false;
             }
         }
-
-        echo "<script>alert('" . ($ok ? "Request submitted and email sent successfully!" : "Failed to submit one or more requests.") . "');</script>";
     }
 
-    // Redirect to prevent form resubmission
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }

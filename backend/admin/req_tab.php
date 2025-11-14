@@ -8,20 +8,6 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'adm
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = $_POST['req_id'] ?? $_POST['request_id'] ?? null;
-    $action = $_POST['action'] ?? null;
-    $reason = $_POST['reason'] ?? null;
-
-    if ($id && $action === 'approve') {
-        $request->updateStatus($id, 'Approved');
-    } elseif ($id && $action === 'deliver') {
-        $request->updateStatus($id, 'Delivered');
-    } elseif ($id && $status === 'Cancelled' && $reason) {
-        $request->updateStatus($id, 'Cancelled', $reason);
-    }
-}
-
 $requests = $request->getAllRequests();
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 ?>
