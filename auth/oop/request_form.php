@@ -36,12 +36,7 @@ class Request
 
     public function updateStatus($req_id, $status, $cancel_reason = null)
     {
-        $sql = "UPDATE req_form SET status = ?, cancel_reason = ? WHERE req_id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ssi", $status, $cancel_reason, $req_id);
-        $result = $stmt->execute();
-
-        if ($result && $status === "Delivered") {
+        if ($status === "Delivered") {
             $sql2 = "SELECT product_id, quantity, item FROM req_form WHERE req_id = ?";
             $stmt2 = $this->conn->prepare($sql2);
             $stmt2->bind_param("i", $req_id);
@@ -52,7 +47,21 @@ class Request
             $qty_out = $info['quantity'];
             $item_name = $info['item'];
 
-            // Deduct qty from items table
+            $sqlCheck = "SELECT qty_on_hand FROM items WHERE id = ?";
+            $stmtCheck = $this->conn->prepare($sqlCheck);
+            $stmtCheck->bind_param("i", $item_id);
+            $stmtCheck->execute();
+            $available = $stmtCheck->get_result()->fetch_assoc()['qty_on_hand'];
+
+            if ($qty_out > $available) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Not enough stock. Available: ' . $available
+                ]);
+                exit;
+            }
+
+            // Deduct stock
             $sql3 = "UPDATE items SET qty_on_hand = qty_on_hand - ? WHERE id = ?";
             $stmt3 = $this->conn->prepare($sql3);
             $stmt3->bind_param("ii", $qty_out, $item_id);
@@ -65,6 +74,12 @@ class Request
             $stmt4->bind_param("iis", $item_id, $qty_out, $remarks);
             $stmt4->execute();
         }
+
+        // Only update status if it's NOT Delivered, or stock check passed
+        $sql = "UPDATE req_form SET status = ?, cancel_reason = ? WHERE req_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssi", $status, $cancel_reason, $req_id);
+        $result = $stmt->execute();
 
         return $result;
     }
