@@ -61,7 +61,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             <li class="sidebar-item">
                 <a href="stock_out.php" class="sidebar-link active">
                     <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Stock Out</span>
+                    <span style="font-size: 18px;">Deducted Items</span>
                 </a>
             </li>
             <li class="sidebar-item">
@@ -73,6 +73,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             <li class="sidebar-item">
                 <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Configuration</span></a>
+            </li>
+            <li class="sidebar-item">
+                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
+                    <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">

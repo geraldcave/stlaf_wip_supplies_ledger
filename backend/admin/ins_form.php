@@ -48,7 +48,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 <body>
     <div class="d-flex">
         <aside id="sidebar" class="sidebar-toggle">
-             <div class="sidebar-logo mt-3">
+            <div class="sidebar-logo mt-3">
                 <img src="../../assets/images/official_logo.png" width="80px" height="80px">
             </div>
             <div class="menu-title">Navigation</div>
@@ -80,10 +80,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             <li class="sidebar-item">
                 <a href="stock_out.php" class="sidebar-link active">
                     <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Stock Out</span>
+                    <span style="font-size: 18px;">Deducted Items</span>
                 </a>
             </li>
-                       <li class="sidebar-item">
+            <li class="sidebar-item">
                 <a href="inventory_dashboard.php" class="sidebar-link">
                     <i class="bi bi-speedometer2"></i>
                     <span style="font-size: 18px;">Supply Tracking</span>
@@ -92,6 +92,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             <li class="sidebar-item">
                 <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Configuration</span></a>
+            </li>
+            <li class="sidebar-item">
+                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
+                    <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">
@@ -136,11 +140,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                 <div class="col-md-3 mb-2">
                                     <label class="form-label fw-bold">Unit</label>
                                     <select name="unit[]" class="form-select" required>
-                                 <option value="BOTTLE">BOTTLE</option>       <option value="PC">PC</option>
+                                        <option value="BOTTLE">BOTTLE</option>
+                                        <option value="PC">PC</option>
                                         <option value="REAM">REAM</option>
                                         <option value="PACK">PACK</option>
                                         <option value="BOX">BOX</option>
-                                        
+
                                         <option value="ROLL">ROLL</option>
                                     </select>
                                 </div>

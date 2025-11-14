@@ -8,30 +8,16 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'adm
     exit();
 }
 
-$ledger = $conn->query("
-    SELECT 'IN' AS type, i.description, s.qty_in AS qty, s.date_in AS date, s.remarks
-    FROM stock_in s
-    JOIN items i ON s.item_id = i.id
-    UNION ALL
-    SELECT 'OUT', i.description, s.qty_out, s.date_out, s.remarks
-    FROM stock_out s
-    JOIN items i ON s.item_id = i.id
-    ORDER BY date DESC
-");
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['req_id'] ?? $_POST['request_id'] ?? null;
     $action = $_POST['action'] ?? null;
     $reason = $_POST['reason'] ?? null;
 
     if ($id && $action === 'approve') {
-        // First step: just approve
         $request->updateStatus($id, 'Approved');
     } elseif ($id && $action === 'deliver') {
-        // Second step: delivery
         $request->updateStatus($id, 'Delivered');
     } elseif ($id && $reason) {
-        // If cancelled
         $request->updateStatus($id, 'Cancelled', $reason);
     }
 }
@@ -88,7 +74,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             <li class="sidebar-item">
                 <a href="stock_out.php" class="sidebar-link active">
                     <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Stock Out</span>
+                    <span style="font-size: 18px;">Deducted Items</span>
                 </a>
             </li>
             <li class="sidebar-item">
@@ -100,6 +86,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             <li class="sidebar-item">
                 <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Configuration</span></a>
+            </li>
+            <li class="sidebar-item">
+                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
+                    <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">
@@ -145,11 +135,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                 Delivered
                             </button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="ledger-tab" data-bs-toggle="tab" data-bs-target="#ledger" type="button" role="tab" aria-controls="ledger" aria-selected="false">
-                                Stock Ledger
-                            </button>
-                        </li>
                     </ul>
 
                     <div class="tab-content mt-3" id="requestTabsContent">
@@ -162,35 +147,9 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                             <?php include_once 'logics/request_table.php';
                             showRequests($requests, 'Cancelled'); ?>
                         </div>
-                        <div class="tab-pane fade" id="delivered" role="tabpanel" aria-labelledby="declined-tab">
+                        <div class="tab-pane fade" id="delivered" role="tabpanel" aria-labelledby="delivered-tab">
                             <?php include_once 'logics/request_table.php';
                             showRequests($requests, 'Delivered'); ?>
-                        </div>
-                        <div class="tab-pane fade" id="ledger" role="tabpanel" aria-labelledby="ledger-tab">
-                            <table class="table table-bordered table-hover mt-3">
-                                <thead class="table-dark text-center">
-                                    <tr>
-                                        <th>Type</th>
-                                        <th>Description</th>
-                                        <th>Qty</th>
-                                        <th>Date</th>
-                                        <th>Department</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php while ($r = $ledger->fetch_assoc()): ?>
-                                        <tr class="text-center">
-                                            <td class="<?= $r['type'] == 'IN' ? 'text-success' : 'text-danger' ?> fw-bold">
-                                                <?= $r['type'] ?>
-                                            </td>
-                                            <td><?= $r['description'] ?></td>
-                                            <td><?= $r['qty'] ?></td>
-                                            <td><?= $r['date'] ?></td>
-                                            <td><?= $r['remarks'] ?></td>
-                                        </tr>
-                                    <?php endwhile; ?>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>

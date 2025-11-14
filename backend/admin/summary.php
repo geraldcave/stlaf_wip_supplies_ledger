@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../../sql/config.php';
-require_once 'logics/stock_in.php';
+require_once 'logics/stock_out.php';
 
 if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'admin') {
     header('Location: ' . BASE_URL . 'index.php');
@@ -10,30 +10,52 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'adm
 
 $db = new Database();
 $conn = $db->getConnection();
-$stock = new StockIn($conn);
+$stock = new StockOut($conn);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $saved = $stock->addStockIn($_POST['item_id'], $_POST['qty_in'], $_POST['remarks']);
+$statsResult = $stock->getStockOutStatistics();
+$stats = [];
+while ($row = $statsResult->fetch_assoc()) {
+    $stats[] = $row;
 }
 
-$items = $stock->getItems();
+usort($stats, function ($a, $b) {
+    return $b['total_qty_out'] - $a['total_qty_out'];
+});
+
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STLAF | StockIn Tab</title>
+    <title>STLAF | Stock Out Statistics</title>
     <link rel="stylesheet" href="../../assets/bootstrap/bootstrap.min.css">
     <link rel="icon" type="image/png" href="../../assets/images/sub_logo_light.png">
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/super.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .main {
+            flex: 1;
+            padding: 20px;
+            min-height: 0;
+        }
 
+        #chart-container {
+            height: 70vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        #stockOutChart {
+            display: block !important;
+            height: auto !important;
+            max-width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -85,7 +107,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <span>Configuration</span></a>
             </li>
             <li class="sidebar-item">
-                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
+                <a href="summary.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
@@ -109,63 +131,21 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     </span>
                 </div>
             </div>
-            <div class="container mt-4">
 
-                <?php if (isset($saved) && $saved): ?>
-                    <div class="alert alert-success">✅ Stock Updated Successfully</div>
-                <?php elseif (isset($saved) && !$saved): ?>
-                    <div class="alert alert-danger">❌ Failed to Update Stock</div>
-                <?php endif; ?>
-
-                <div class="card shadow p-4 border-0">
-                    <h4 class="fw-bold" style="color: #123765 !important;">Stock In Form</h4>
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Select Item</label>
-                            <select name="item_id" class="form-select select2-item" required>
-                                <option value="">-- Select Item --</option>
-                                <?php while ($row = $items->fetch_assoc()): ?>
-                                    <option value="<?= $row['id'] ?>">
-                                        <?= $row['description'] ?> (On Hand: <?= $row['qty_on_hand'] ?> <?= $row['unit'] ?>)
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Quantity to Add</label>
-                            <input type="number" name="qty_in" min="1" class="form-control" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Remarks (Optional)</label>
-                            <input type="text" name="remarks" class="form-control" placeholder="Ex: Restock for Printing Room">
-                        </div>
-
-                        <button class="btn w-100 fw-bold" style="background-color: #123765 !important; color: white !important;">Save Stock In</button>
-                    </form>
+            <div style="background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                <h3 class="fw-bold mb-4 text-center">Stock Out Statistics</h3>
+                <div id="chart-container">
+                    <canvas id="stockOutChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
+
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/bootstrap/all.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
-        const toggler = document.querySelector(".toggler-btn");
-        toggler.addEventListener("click", function() {
-            document.querySelector("#sidebar").classList.toggle("collapsed");
-        });
-        $(document).ready(function() {
-            $('.select2-item').select2({
-                placeholder: "Search Item...",
-                width: '100%'
-            });
-        });
+        const stats = <?= json_encode($stats) ?>;
     </script>
-
+    <script src="assets/sum.js"></script>
 </body>
-
 </html>
