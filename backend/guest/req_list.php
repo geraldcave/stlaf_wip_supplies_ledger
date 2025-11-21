@@ -77,14 +77,13 @@ $departments = $deptResult ? $deptResult->fetch_all(MYSQLI_ASSOC) : [];
                             <th class="text-center">Date Requested</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="requestsBody">
                         <?php foreach ($requests as $i => $row): ?>
                             <?php
                             $status = ucfirst($row['status']);
                             $badgeClass = match (strtolower($status)) {
-                                'approved' => 'status-approved',
-                                'declined' => 'status-rejected',
-                                'rejected' => 'status-rejected',
+                                'delivered' => 'status-delivered',
+                                'cancelled' => 'status-cancelled',
                                 default => 'status-pending'
                             };
                             ?>
@@ -95,14 +94,6 @@ $departments = $deptResult ? $deptResult->fetch_all(MYSQLI_ASSOC) : [];
                                 <td><?= htmlspecialchars($row['quantity']) ?></td>
                                 <td><?= htmlspecialchars($row['unit']) ?></td>
                                 <td><?= htmlspecialchars($row['department']) ?></td>
-                                <?php
-                                $status = ucfirst($row['status']);
-                                $badgeClass = match (strtolower($status)) {
-                                    'delivered' => 'status-delivered',
-                                    'cancelled' => 'status-cancelled',
-                                    default => 'status-pending'
-                                };
-                                ?>
                                 <td>
                                     <span class="status-badge <?= $badgeClass ?>"><?= $status ?></span>
                                     <?php if (strtolower($status) === 'cancelled'): ?>
@@ -113,7 +104,6 @@ $departments = $deptResult ? $deptResult->fetch_all(MYSQLI_ASSOC) : [];
                                     <?php endif; ?>
                                 </td>
                                 <td><?= date("M d, Y h:i A", strtotime($row['date_req'])) ?></td>
-
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -121,6 +111,45 @@ $departments = $deptResult ? $deptResult->fetch_all(MYSQLI_ASSOC) : [];
             </div>
         </div>
     </div>
+
+    <script>
+    function loadRequests() {
+        fetch('get_requests_table.php')
+            .then(response => response.text())
+            .then(html => {
+                const tbody = document.getElementById('requestsBody');
+                if (!tbody) return;
+
+                const currentScroll = tbody.parentElement.scrollTop;
+                const currentSearch = document.getElementById('searchInput')?.value.toLowerCase() || '';
+                const selectedDept = document.querySelector('[data-department].active-filter')?.getAttribute('data-department') || 'all';
+
+                tbody.innerHTML = html;
+
+                if (currentSearch) {
+                    const rows = tbody.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        const text = row.innerText.toLowerCase();
+                        row.style.display = text.includes(currentSearch) ? '' : 'none';
+                    });
+                }
+
+                if (selectedDept && selectedDept !== 'all') {
+                    const rows = tbody.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        const dept = row.getAttribute('data-department');
+                        row.style.display = (dept === selectedDept && row.style.display !== 'none') ? '' : 'none';
+                    });
+                }
+
+                tbody.parentElement.scrollTop = currentScroll;
+            })
+            .catch(err => console.error(err));
+    }
+
+    setInterval(loadRequests, 3000);
+    </script>
+
     <script src="../../assets/bootstrap/bootstrap.bundle.js"></script>
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="../../assets/bootstrap/all.min.js"></script>

@@ -13,31 +13,44 @@ $conn = $db->getConnection();
 $stock = new StockIn($conn);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $saved = $stock->addStockIn($_POST['item_id'], $_POST['qty_in'], $_POST['remarks']);
+
+    $saved = true;
+
+    for ($i = 0; $i < count($_POST['item_id']); $i++) {
+
+        $result = $stock->addStockIn(
+            $_POST['item_id'][$i],
+            $_POST['qty_in'][$i],
+            $_POST['remarks'][$i]
+        );
+
+        if (!$result) {
+            $saved = false;
+        }
+    }
 }
 
 $items = $stock->getItems();
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STLAF | StockIn Tab</title>
+    <title>STLAF | Stock In</title>
     <link rel="stylesheet" href="../../assets/bootstrap/bootstrap.min.css">
     <link rel="icon" type="image/png" href="../../assets/images/sub_logo_light.png">
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/super.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 </head>
 
 <body>
     <div class="d-flex">
+
         <aside id="sidebar" class="sidebar-toggle">
             <div class="sidebar-logo mt-3">
                 <img src="../../assets/images/official_logo.png" width="80px" height="80px">
@@ -97,6 +110,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
         </aside>
 
         <div class="main">
+
             <div class="topbar">
                 <div class="toggle">
                     <button class="toggler-btn" type="button">
@@ -109,60 +123,122 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     </span>
                 </div>
             </div>
+
             <div class="container mt-4">
 
                 <?php if (isset($saved) && $saved): ?>
-                    <div class="alert alert-success">✅ Stock Updated Successfully</div>
+                    <div class="alert alert-success fw-bold">✅ Stock Updated Successfully!</div>
                 <?php elseif (isset($saved) && !$saved): ?>
-                    <div class="alert alert-danger">❌ Failed to Update Stock</div>
+                    <div class="alert alert-danger fw-bold">❌ Failed to Save Some Items.</div>
                 <?php endif; ?>
 
                 <div class="card shadow p-4 border-0">
-                    <h4 class="fw-bold" style="color: #123765 !important;">Stock In Form</h4>
+                    <h4 class="fw-bold" style="color: #123765;">Stock In Form</h4>
+
                     <form method="POST">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Select Item</label>
-                            <select name="item_id" class="form-select select2-item" required>
-                                <option value="">-- Select Item --</option>
-                                <?php while ($row = $items->fetch_assoc()): ?>
-                                    <option value="<?= $row['id'] ?>">
-                                        <?= $row['description'] ?> (On Hand: <?= $row['qty_on_hand'] ?> <?= $row['unit'] ?>)
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
+
+                        <div id="stockRows">
+
+                            <!-- ROW TEMPLATE -->
+                            <div class="row stock-row border rounded p-3 mb-3">
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="form-label fw-bold">Select Item</label>
+                                    <select name="item_id[]" class="form-select select2-item" required>
+                                        <option value="">-- Select Item --</option>
+                                        <?php
+                                        $items->data_seek(0);
+                                        while ($row = $items->fetch_assoc()):
+                                        ?>
+                                            <option value="<?= $row['id'] ?>">
+                                                <?= $row['description'] ?> (On Hand: <?= $row['qty_on_hand'] ?> <?= $row['unit'] ?>)
+                                            </option>
+                                        <?php endwhile; ?>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label fw-bold">Quantity</label>
+                                    <input type="number" name="qty_in[]" min="1" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label fw-bold">Remarks</label>
+                                    <input type="text" name="remarks[]" class="form-control">
+                                </div>
+
+                                <div class="col-md-1 d-flex align-items-end">
+                                    <button type="button" class="btn btn-danger w-100 remove-row">
+                                        <i class="bi bi-dash-circle"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Quantity to Add</label>
-                            <input type="number" name="qty_in" min="1" class="form-control" required>
-                        </div>
+                        <button type="button" id="addRow" class="btn btn-secondary fw-bold mb-3">
+                            <i class="bi bi-plus-circle"></i> Add Another Item
+                        </button>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Remarks (Optional)</label>
-                            <input type="text" name="remarks" class="form-control" placeholder="Ex: Restock for Printing Room">
-                        </div>
+                        <button class="btn w-100 text-white fw-bold" style="background:#123765;">
+                            Save Stock In
+                        </button>
 
-                        <button class="btn w-100 fw-bold" style="background-color: #123765 !important; color: white !important;">Save Stock In</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/bootstrap/all.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        const toggler = document.querySelector(".toggler-btn");
-        toggler.addEventListener("click", function() {
-            document.querySelector("#sidebar").classList.toggle("collapsed");
-        });
         $(document).ready(function() {
-            $('.select2-item').select2({
-                placeholder: "Search Item...",
-                width: '100%'
+
+            function initSelect2(element) {
+                element.select2({
+                    placeholder: "Search Item...",
+                    width: '100%'
+                });
+            }
+
+            // Initialize first row
+            initSelect2($('.select2-item'));
+
+            // Add New Row
+            $("#addRow").click(function() {
+                let row = $(".stock-row").first().clone();
+
+                // Remove old Select2 UI
+                row.find(".select2").remove();
+                row.find(".select2-hidden-accessible").removeClass("select2-hidden-accessible");
+
+                // Reset values
+                row.find("input").val("");
+                row.find("select").val("");
+
+                // Append row
+                $("#stockRows").append(row);
+
+                // Reinitialize Select2 on new row
+                initSelect2(row.find(".select2-item"));
             });
+
+            // Remove Row
+            $(document).on("click", ".remove-row", function() {
+                if ($(".stock-row").length > 1) {
+                    $(this).closest(".stock-row").remove();
+                }
+            });
+
+            // Sidebar toggle
+            $(".toggler-btn").click(function() {
+                document.querySelector("#sidebar").classList.toggle("collapsed");
+            });
+
         });
     </script>
 

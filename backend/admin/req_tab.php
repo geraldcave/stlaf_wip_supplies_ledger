@@ -8,6 +8,10 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'adm
     exit();
 }
 
+$db = new Database();
+$conn = $db->getConnection();
+$request = new Request($conn);
+
 $requests = $request->getAllRequests();
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 ?>
@@ -203,6 +207,65 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
     <script src="assets/admin.js"></script>
 
     <script>
+        // live refresh of pending requests
+        function loadPendingRequests() {
+            fetch('get_pending_requests.php')
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('HTTP error', response.status);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    const tableBody = document.getElementById('requestTableBody');
+                    if (!tableBody) return;
+
+                    const searchInput = document.getElementById('searchInput');
+                    const filter = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+                    tableBody.innerHTML = html;
+
+                    // re-apply filter after refresh
+                    if (filter && searchInput) {
+                        const rows = Array.from(tableBody.querySelectorAll("tr"));
+                        let visibleCount = 0;
+
+                        rows.forEach((row) => {
+                            if (row.classList.contains("no-result-row") || row.textContent.includes("No requests available.")) {
+                                row.style.display = "none";
+                                return;
+                            }
+
+                            const text = row.textContent.toLowerCase();
+                            if (text.includes(filter)) {
+                                row.style.display = "";
+                                visibleCount++;
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+
+                        let noResultRow = document.getElementById("noResultRow");
+                        if (visibleCount === 0) {
+                            if (!noResultRow) {
+                                noResultRow = document.createElement("tr");
+                                noResultRow.id = "noResultRow";
+                                noResultRow.classList.add("no-result-row");
+                                noResultRow.innerHTML = `<td colspan="9" class="text-center text-muted py-3">No matching results.</td>`;
+                                tableBody.appendChild(noResultRow);
+                            }
+                        } else if (noResultRow) {
+                            noResultRow.remove();
+                        }
+                    }
+                })
+                .catch(err => console.error('Fetch error:', err));
+        }
+
+        // refresh every 3 seconds
+        setInterval(loadPendingRequests, 3000);
+
+        // existing search code
         document.addEventListener("DOMContentLoaded", function() {
             const searchInput = document.getElementById("searchInput");
             const tableBody = document.getElementById("requestTableBody");
@@ -215,7 +278,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 let visibleCount = 0;
 
                 rows.forEach((row) => {
-                    // Skip the "No pending requests" or "no results" row
                     if (row.classList.contains("no-result-row") || row.textContent.includes("No pending requests")) {
                         row.style.display = "none";
                         return;
@@ -230,7 +292,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     }
                 });
 
-                // Handle no result message
                 let noResultRow = document.getElementById("noResultRow");
                 if (visibleCount === 0) {
                     if (!noResultRow) {
