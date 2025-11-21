@@ -28,6 +28,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $saved = false;
         }
     }
+
+    $_SESSION['stock_saved'] = $saved;
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
+// Retrieve saved status from session after redirect
+if (isset($_SESSION['stock_saved'])) {
+    $saved = $_SESSION['stock_saved'];
+    unset($_SESSION['stock_saved']);
 }
 
 $items = $stock->getItems();
@@ -98,7 +108,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <span>Configuration</span></a>
             </li>
             <li class="sidebar-item">
-                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
+                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i>
                     <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
@@ -139,7 +149,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
                         <div id="stockRows">
 
-                            <!-- ROW TEMPLATE -->
                             <div class="row stock-row border rounded p-3 mb-3">
 
                                 <div class="col-md-6 mb-2">
@@ -205,36 +214,27 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 });
             }
 
-            // Initialize first row
             initSelect2($('.select2-item'));
 
-            // Add New Row
             $("#addRow").click(function() {
                 let row = $(".stock-row").first().clone();
 
-                // Remove old Select2 UI
                 row.find(".select2").remove();
                 row.find(".select2-hidden-accessible").removeClass("select2-hidden-accessible");
 
-                // Reset values
                 row.find("input").val("");
                 row.find("select").val("");
 
-                // Append row
                 $("#stockRows").append(row);
-
-                // Reinitialize Select2 on new row
                 initSelect2(row.find(".select2-item"));
             });
 
-            // Remove Row
             $(document).on("click", ".remove-row", function() {
                 if ($(".stock-row").length > 1) {
                     $(this).closest(".stock-row").remove();
                 }
             });
 
-            // Sidebar toggle
             $(".toggler-btn").click(function() {
                 document.querySelector("#sidebar").classList.toggle("collapsed");
             });
