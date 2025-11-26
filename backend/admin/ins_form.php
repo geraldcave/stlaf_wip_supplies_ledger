@@ -133,7 +133,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
                             <div class="row item-row border rounded p-3 mb-3">
                                 <div class="col-md-6 mb-2">
-                                    <label class="form-label fw-bold">Item Description</label>
+                                    <label class="form-label fw-bold">ITEM | DESCRIPTION | SIZE/GRAM</label>
                                     <input type="text" name="description[]" class="form-control" required>
                                 </div>
 

@@ -68,7 +68,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 <img src="../../assets/images/official_logo.png" width="80px" height="80px">
             </div>
             <div class="menu-title">Navigation</div>
-
             <li class="sidebar-item">
                 <a href="admin_dashboard.php" class="sidebar-link">
                     <i class="bi bi-cast"></i>
@@ -136,9 +135,8 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             </div>
 
             <div style="background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
-                <form method="GET" class="d-flex gap-2 mb-3" style="max-width:420px;">
-
-                    <select name="month" class="form-select">
+                <form method="GET" id="filterForm" class="d-flex gap-2 mb-3" style="max-width:420px;">
+                    <select name="month" class="form-select" id="monthSelect">
                         <option value="">All Months</option>
                         <?php
                         for ($m = 1; $m <= 12; $m++) {
@@ -148,24 +146,21 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                         ?>
                     </select>
 
-                    <select name="year" class="form-select">
+                    <select name="year" class="form-select" id="yearSelect">
                         <option value="">All Years</option>
                         <?php
                         $startYear = 2024;
                         $currentYear = date("Y");
-
                         for ($y = $currentYear; $y >= $startYear; $y--) {
                             $selected = (isset($_GET['year']) && $_GET['year'] == $y) ? 'selected' : '';
                             echo "<option value='$y' $selected>$y</option>";
                         }
                         ?>
                     </select>
-                    <a href="download_summary.php?month=<?= $month ?>&year=<?= $year ?>"
-                        class="btn btn-danger">
+
+                    <a href="download_summary.php?month=<?= $month ?>&year=<?= $year ?>" class="btn btn-danger">
                         <i class="bi bi-file-earmark-pdf"></i> Download PDF
                     </a>
-
-                    <button class="btn btn-primary">Filter</button>
                 </form>
 
                 <h3 class="fw-bold mb-4 text-center">Stock Out Statistics</h3>
@@ -173,7 +168,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <canvas id="stockOutChart"></canvas>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -181,6 +175,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
         const stats = <?= json_encode($stats) ?>;
+        document.getElementById('monthSelect').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+        document.getElementById('yearSelect').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
     </script>
     <script src="assets/sum.js"></script>
 </body>
