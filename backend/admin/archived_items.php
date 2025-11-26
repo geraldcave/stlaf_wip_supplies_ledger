@@ -19,29 +19,13 @@ $page  = isset($_GET['page']) && $_GET['page'] > 0 ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['updateField'])) {
-        $id = (int) $_POST['id'];
-        $field = $_POST['field'];
-        $value = $_POST['value'];
-
-        if (in_array($field, ['description', 'unit', 'qty_on_hand'])) {
-            $stmt = $conn->prepare("UPDATE items SET $field = ? WHERE id = ?");
-            $stmt->bind_param("si", $value, $id);
-            $ok = $stmt->execute();
-            echo json_encode(['success' => (bool) $ok]);
-        } else {
-            echo json_encode(['success' => false]);
-        }
-        exit;
-    }
-
     if (isset($_POST['action']) && isset($_POST['id'])) {
         $id = (int) $_POST['id'];
         $action = $_POST['action'];
 
-        if ($action === 'archive') {
-            $ok = $item->archiveItem($id);
-            echo json_encode(['success' => (bool) $ok, 'type' => 'archive']);
+        if ($action === 'restore') {
+            $ok = $item->restoreItem($id);
+            echo json_encode(['success' => (bool) $ok, 'type' => 'restore']);
             exit;
         }
 
@@ -57,20 +41,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $countQuery = $search !== ""
-    ? $conn->query("SELECT COUNT(*) AS total FROM items WHERE is_archived = 0 AND description LIKE '%$search%'")
-    : $conn->query("SELECT COUNT(*) AS total FROM items WHERE is_archived = 0");
+    ? $conn->query("SELECT COUNT(*) AS total FROM items WHERE is_archived = 1 AND description LIKE '%$search%'")
+    : $conn->query("SELECT COUNT(*) AS total FROM items WHERE is_archived = 1");
 
 $totalItems = $countQuery->fetch_assoc()['total'];
 $totalPages = $totalItems > 0 ? ceil($totalItems / $limit) : 1;
 
 $query = "SELECT * FROM items 
-          WHERE is_archived = 0 AND description LIKE '%$search%' 
+          WHERE is_archived = 1 AND description LIKE '%$search%' 
           ORDER BY description ASC 
           LIMIT $limit OFFSET $offset";
 $items = $conn->query($query);
 
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
-
 $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
 ?>
 <!DOCTYPE html>
@@ -79,37 +62,12 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STLAF | Supply Tracking</title>
+    <title>STLAF | Archived Items</title>
     <link rel="icon" type="image/png" href="../../assets/images/sub_logo_light.png">
     <link rel="stylesheet" href="../../assets/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/super.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        .editable-input {
-            width: 100%;
-            text-align: center;
-            border: none;
-            background: transparent;
-        }
-
-        .editable-input:focus {
-            outline: 1px solid #0d6efd;
-            background: #fff;
-        }
-
-        select.editable-select {
-            width: 100%;
-            text-align: center;
-            border: none;
-            background: transparent;
-        }
-
-        select.editable-select:focus {
-            outline: 1px solid #0d6efd;
-            background: #fff;
-        }
-    </style>
 </head>
 
 <body>
@@ -127,25 +85,25 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="req_tab.php" class="sidebar-link active">
+                <a href="req_tab.php" class="sidebar-link">
                     <i class="bi bi-box"></i>
                     <span style="font-size: 18px;">Employee Requests</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="ins_form.php" class="sidebar-link active">
+                <a href="ins_form.php" class="sidebar-link">
                     <i class="bi bi-basket"></i>
                     <span style="font-size: 18px;">Ins Forms</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="stock_in.php" class="sidebar-link active">
+                <a href="stock_in.php" class="sidebar-link">
                     <i class="bi bi-basket"></i>
                     <span style="font-size: 18px;">Stock In</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="stock_out.php" class="sidebar-link active">
+                <a href="stock_out.php" class="sidebar-link">
                     <i class="bi bi-basket"></i>
                     <span style="font-size: 18px;">Deducted Items</span>
                 </a>
@@ -157,11 +115,11 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
+                <a href="config_item.php" class="sidebar-link"><i class="bi bi-gear"></i>
                     <span>Configuration</span></a>
             </li>
             <li class="sidebar-item">
-                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
+                <a href="summary.php" class="sidebar-link"><i class="bi bi-clipboard-data"></i>
                     <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
@@ -189,7 +147,7 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
             <div style="width:95%; margin:20px auto; background:#f8f9fa; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                 <div class="card shadow-lg border-0 p-4 rounded-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="fw-bold m-0">Configuration</h3>
+                        <h3 class="fw-bold m-0">Archived Items</h3>
                         <input type="text" id="searchInput" class="form-control" style="max-width:280px;"
                             placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>" onkeyup="if(event.keyCode==13) applySearch();">
                     </div>
@@ -207,21 +165,14 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                             <tbody id="inventoryTable">
                                 <?php while ($row = $items->fetch_assoc()):
                                     $onhand = $row['qty_on_hand'];
-                                    $threshold = $row['threshold'] ?? 10;
                                 ?>
-                                    <tr class="<?= ($onhand < $threshold) ? 'table-danger' : ''; ?>">
-                                        <td><input type="text" class="editable-input" data-id="<?= $row['id'] ?>" data-field="description" value="<?= htmlspecialchars($row['description']) ?>"></td>
+                                    <tr>
+                                        <td><?= htmlspecialchars($row['description']) ?></td>
+                                        <td class="text-center"><?= htmlspecialchars($row['unit']) ?></td>
+                                        <td class="text-center"><?= (int) $onhand ?></td>
                                         <td class="text-center">
-                                            <select class="editable-select" data-id="<?= $row['id'] ?>" data-field="unit">
-                                                <?php foreach ($unitOptions as $u): ?>
-                                                    <option value="<?= $u ?>" <?= $u == $row['unit'] ? 'selected' : '' ?>><?= $u ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </td>
-                                        <td class="text-center"><input type="number" class="editable-input" data-id="<?= $row['id'] ?>" data-field="qty_on_hand" value="<?= $onhand ?>" min="0"></td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-warning me-1 btn-archive" data-id="<?= $row['id'] ?>">
-                                                <i class="bi bi-archive"></i>
+                                            <button type="button" class="btn btn-sm btn-success me-1 btn-restore" data-id="<?= $row['id'] ?>">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="<?= $row['id'] ?>">
                                                 <i class="bi bi-trash"></i>
@@ -248,8 +199,9 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                             </li>
                         </ul>
                     </nav>
-                    <div class="alert alert-warning mt-3 fw-bold text-center">
-                        ⚠️ Items highlighted in <span class="text-danger">RED</span> are below safe stock level.
+
+                    <div class="alert alert-info mt-3 fw-bold text-center">
+                        Archived items can be restored or permanently deleted from this page.
                     </div>
                 </div>
             </div>
@@ -270,62 +222,34 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
             window.location.href = "?search=" + encodeURIComponent(val) + "&page=1";
         }
 
-        document.querySelectorAll(".editable-input, .editable-select").forEach(input => {
-            input.addEventListener("change", function() {
-                const id = this.dataset.id;
-                const field = this.dataset.field;
-                const value = this.value;
-
-                fetch("", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: "updateField=1&id=" + encodeURIComponent(id) + "&field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value)
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success && field === 'qty_on_hand') {
-                            const row = this.closest("tr");
-                            const threshold = parseInt(row.getAttribute("data-threshold") || "10");
-                            if (parseInt(value) < threshold) {
-                                row.classList.add("table-danger");
-                            } else {
-                                row.classList.remove("table-danger");
-                            }
-                        }
-                    });
-            });
-        });
-
-        document.querySelectorAll(".btn-archive").forEach(btn => {
+        document.querySelectorAll(".btn-restore").forEach(btn => {
             btn.addEventListener("click", function() {
                 const id = this.dataset.id;
-                if (!confirm("Archive this item? It will be hidden from the active list.")) return;
+                if (!confirm("Restore this item to active list?")) return;
 
                 fetch("", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
-                    body: "action=archive&id=" + encodeURIComponent(id)
+                    body: "action=restore&id=" + encodeURIComponent(id)
                 })
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
                             this.closest("tr").remove();
                         } else {
-                            alert("Failed to archive item.");
+                            alert("Failed to restore item.");
                         }
                     })
-                    .catch(() => alert("Error archiving item."));
+                    .catch(() => alert("Error restoring item."));
             });
         });
 
         document.querySelectorAll(".btn-delete").forEach(btn => {
             btn.addEventListener("click", function() {
                 const id = this.dataset.id;
-                if (!confirm("Are you sure you want to permanently delete this item?")) return;
+                if (!confirm("Permanently delete this item? This cannot be undone.")) return;
 
                 fetch("", {
                     method: "POST",

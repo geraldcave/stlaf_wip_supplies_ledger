@@ -98,6 +98,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
+                <a href="archived_items.php" class="sidebar-link active"><i class="bi bi-archive"></i>
+                    <span>Archived Items</span></a>
+            </li>
+            <li class="sidebar-item">
                 <a href="../../logout.php" class="sidebar-link">
                     <i class="bi bi-box-arrow-right"></i>
                     <span style="font-size: 18px;">Logout</span>
