@@ -50,21 +50,48 @@ class StockOut
     //     FROM items i
     //     LEFT JOIN stock_out s ON i.id = s.item_id
     //     ORDER BY i.description ASC, s.date_out DESC
-    public function getStockOutStatistics()
+    // -------------------------------------------------
+    // public function getStockOutStatistics()
+    // {
+    //     // for even 0 can get
+    //     // $sql = "SELECT i.description, COALESCE(SUM(s.qty_out), 0) AS total_qty_out
+    //     //     FROM items i
+    //     //     LEFT JOIN stock_out s ON i.id = s.item_id
+    //     //     GROUP BY i.id
+    //     //     ORDER BY i.description ASC";
+    //     // return $this->conn->query($sql);
+    //     $sql = "SELECT i.description, SUM(s.qty_out) AS total_qty_out
+    //     FROM items i
+    //     LEFT JOIN stock_out s ON i.id = s.item_id
+    //     GROUP BY i.id
+    //     HAVING SUM(s.qty_out) > 0
+    //     ORDER BY i.description ASC";
+
+    //     return $this->conn->query($sql);
+    // }
+    public function getStockOutStatistics($month = null, $year = null)
     {
-        // for even 0 can get
-        // $sql = "SELECT i.description, COALESCE(SUM(s.qty_out), 0) AS total_qty_out
-        //     FROM items i
-        //     LEFT JOIN stock_out s ON i.id = s.item_id
-        //     GROUP BY i.id
-        //     ORDER BY i.description ASC";
-        // return $this->conn->query($sql);
-        $sql = "SELECT i.description, SUM(s.qty_out) AS total_qty_out
+        $sql = "
+        SELECT 
+            i.description AS item_name,
+            SUM(COALESCE(s.qty_out, 0)) AS total_qty_out
         FROM items i
         LEFT JOIN stock_out s ON i.id = s.item_id
+        WHERE 1
+    ";
+
+        if (!empty($month)) {
+            $sql .= " AND MONTH(s.date_out) = " . intval($month);
+        }
+
+        if (!empty($year)) {
+            $sql .= " AND YEAR(s.date_out) = " . intval($year);
+        }
+
+        $sql .= "
         GROUP BY i.id
-        HAVING SUM(s.qty_out) > 0
-        ORDER BY i.description ASC";
+        ORDER BY total_qty_out DESC
+    ";
 
         return $this->conn->query($sql);
     }

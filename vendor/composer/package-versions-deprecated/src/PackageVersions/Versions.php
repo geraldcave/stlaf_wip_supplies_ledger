@@ -34,8 +34,12 @@ final class Versions
      */
     const VERSIONS          = array (
   'composer/ca-bundle' => '1.3.5@74780ccf8c19d6acb8d65c5f39cd72110e132bbd',
+  'dompdf/dompdf' => 'v3.1.4@db712c90c5b9868df3600e64e68da62e78a34623',
+  'dompdf/php-font-lib' => '1.0.1@6137b7d4232b7f16c882c75e4ca3991dbcf6fe2d',
+  'dompdf/php-svg-lib' => '1.0.0@eb045e518185298eb6ff8d80d0d0c6b17aecd9af',
   'fig/http-message-util' => '1.1.5@9d94dc0154230ac39e5bf89398b324a86f63f765',
   'google/recaptcha' => '1.2.4@614f25a9038be4f3f2da7cbfd778dc5b357d2419',
+  'masterminds/html5' => '2.10.0@fcf91eb64359852f00d921887b219479b4f21251',
   'nikic/fast-route' => 'v1.3.0@181d480e08d9476e61381e04a71b34dc0432e812',
   'paragonie/random_compat' => 'v9.99.100@996434e5492cb4c3edcb9168db6fbb1359ef965a',
   'paragonie/sodium_compat' => 'v1.19.0@cb15e403ecbe6a6cc515f855c310eb6b1872a933',
@@ -50,6 +54,7 @@ final class Versions
   'psr/http-message' => '1.0.1@f6561bf28d520154e4b0ec72be95418abe6d9363',
   'psr/log' => '1.1.4@d49695b909c3b7628b6289db5479a1c204601f11',
   'ralouphie/getallheaders' => '3.0.3@120b605dfeb996808c31b6477290a714d356e822',
+  'sabberworm/php-css-parser' => 'v8.9.0@d8e916507b88e389e26d4ab03c904a082aa66bb9',
   'slim/psr7' => '1.4@0dca983ca32a26f4a91fb11173b7b9eaee29e9d6',
   'symfony/cache' => 'v5.4.19@e9147c89fdfdc5d5ef798bb7193f23726ad609f5',
   'symfony/cache-contracts' => 'v2.5.2@64be4a7acb83b6f2bf6de9a02cee6dad41277ebc',

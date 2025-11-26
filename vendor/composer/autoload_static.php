@@ -162,9 +162,11 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
             'Symfony\\Component\\Console\\' => 26,
             'Symfony\\Component\\Config\\' => 25,
             'Symfony\\Component\\Cache\\' => 24,
+            'Svg\\' => 4,
             'Slim\\Psr7\\' => 10,
             'SlevomatCodingStandard\\' => 23,
             'Safe\\' => 5,
+            'Sabberworm\\CSS\\' => 15,
         ),
         'R' => 
         array (
@@ -199,6 +201,10 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
             'PHPStan\\' => 8,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
+        'M' => 
+        array (
+            'Masterminds\\' => 12,
+        ),
         'L' => 
         array (
             'League\\Uri\\' => 11,
@@ -206,6 +212,7 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
         ),
         'F' => 
         array (
+            'FontLib\\' => 8,
             'Fig\\Http\\Message\\' => 17,
             'FastRoute\\' => 10,
             'Facebook\\WebDriver\\' => 19,
@@ -213,6 +220,7 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
         ),
         'D' => 
         array (
+            'Dompdf\\' => 7,
             'Doctrine\\Instantiator\\' => 22,
             'DeepCopy\\' => 9,
             'Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 55,
@@ -246,9 +254,9 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
     public static $prefixDirsPsr4 = array (
         'phpDocumentor\\Reflection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'XdgBaseDir\\' => 
         array (
@@ -350,6 +358,10 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
         array (
             0 => __DIR__ . '/..' . '/symfony/cache',
         ),
+        'Svg\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
+        ),
         'Slim\\Psr7\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/psr7/src',
@@ -363,6 +375,10 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
             0 => __DIR__ . '/..' . '/thecodingmachine/safe/lib',
             1 => __DIR__ . '/..' . '/thecodingmachine/safe/deprecated',
             2 => __DIR__ . '/..' . '/thecodingmachine/safe/generated',
+        ),
+        'Sabberworm\\CSS\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
         ),
         'ReCaptcha\\' => 
         array (
@@ -382,8 +398,8 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -474,14 +490,22 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
+        'Masterminds\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/masterminds/html5/src',
+        ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
-            1 => __DIR__ . '/..' . '/league/uri/src',
+            0 => __DIR__ . '/..' . '/league/uri/src',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
         ),
         'LanguageServerProtocol\\' => 
         array (
             0 => __DIR__ . '/..' . '/felixfbecker/language-server-protocol/src',
+        ),
+        'FontLib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
         ),
         'Fig\\Http\\Message\\' => 
         array (
@@ -498,6 +522,10 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
         'FG\\' => 
         array (
             0 => __DIR__ . '/..' . '/fgrosse/phpasn1/lib',
+        ),
+        'Dompdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
@@ -593,6 +621,7 @@ class ComposerStaticInit3ad3c07cecc94161fbbc665a6bfd7ec3
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',

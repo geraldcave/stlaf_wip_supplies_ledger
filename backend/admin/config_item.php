@@ -187,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateField'])) {
                                             </select>
                                         </td>
                                         <td class="text-center"><input type="number" class="editable-input" data-id="<?= $row['id'] ?>" data-field="qty_on_hand" value="<?= $onhand ?>" min="0"></td>
-                                        
+
                                     </tr>
                                 <?php endwhile; ?>
                             </tbody>
@@ -261,6 +261,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateField'])) {
                         }
                     });
             });
+        });
+        const toggler = document.querySelector(".toggler-btn");
+        toggler.addEventListener("click", function() {
+            document.querySelector("#sidebar").classList.toggle("collapsed");
         });
     </script>
 </body>

@@ -147,7 +147,7 @@ $departments = $deptResult ? $deptResult->fetch_all(MYSQLI_ASSOC) : [];
             .catch(err => console.error(err));
     }
 
-    setInterval(loadRequests, 3000);
+    setInterval(loadRequests, 100000);
     </script>
 
     <script src="../../assets/bootstrap/bootstrap.bundle.js"></script>

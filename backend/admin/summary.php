@@ -12,7 +12,11 @@ $db = new Database();
 $conn = $db->getConnection();
 $stock = new StockOut($conn);
 
-$statsResult = $stock->getStockOutStatistics();
+$month = $_GET['month'] ?? null;
+$year = $_GET['year'] ?? null;
+
+$statsResult = $stock->getStockOutStatistics($month, $year);
+
 $stats = [];
 while ($row = $statsResult->fetch_assoc()) {
     $stats[] = $row;
@@ -132,6 +136,38 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             </div>
 
             <div style="background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                <form method="GET" class="d-flex gap-2 mb-3" style="max-width:420px;">
+
+                    <select name="month" class="form-select">
+                        <option value="">All Months</option>
+                        <?php
+                        for ($m = 1; $m <= 12; $m++) {
+                            $selected = (isset($_GET['month']) && $_GET['month'] == $m) ? 'selected' : '';
+                            echo "<option value='$m' $selected>" . date("F", mktime(0, 0, 0, $m, 1)) . "</option>";
+                        }
+                        ?>
+                    </select>
+
+                    <select name="year" class="form-select">
+                        <option value="">All Years</option>
+                        <?php
+                        $startYear = 2024;
+                        $currentYear = date("Y");
+
+                        for ($y = $currentYear; $y >= $startYear; $y--) {
+                            $selected = (isset($_GET['year']) && $_GET['year'] == $y) ? 'selected' : '';
+                            echo "<option value='$y' $selected>$y</option>";
+                        }
+                        ?>
+                    </select>
+                    <a href="download_summary.php?month=<?= $month ?>&year=<?= $year ?>"
+                        class="btn btn-danger">
+                        <i class="bi bi-file-earmark-pdf"></i> Download PDF
+                    </a>
+
+                    <button class="btn btn-primary">Filter</button>
+                </form>
+
                 <h3 class="fw-bold mb-4 text-center">Stock Out Statistics</h3>
                 <div id="chart-container">
                     <canvas id="stockOutChart"></canvas>
