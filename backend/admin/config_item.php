@@ -13,7 +13,6 @@ $conn = $db->getConnection();
 $item = new Item($conn);
 
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : "";
-
 $limit = isset($_GET['limit']) && $_GET['limit'] > 0 ? (int) $_GET['limit'] : 10;
 $page  = isset($_GET['page']) && $_GET['page'] > 0 ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
@@ -24,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $field = $_POST['field'];
         $value = $_POST['value'];
 
-        if (in_array($field, ['description', 'unit', 'qty_on_hand'])) {
+        if (in_array($field, ['description', 'unit', 'qty_on_hand', 'threshold'])) {
             $stmt = $conn->prepare("UPDATE items SET $field = ? WHERE id = ?");
             $stmt->bind_param("si", $value, $id);
             $ok = $stmt->execute();
@@ -70,7 +69,6 @@ $query = "SELECT * FROM items
 $items = $conn->query($query);
 
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
-
 $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
 ?>
 <!DOCTYPE html>
@@ -86,29 +84,10 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
     <link rel="stylesheet" href="assets/super.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        .editable-input {
-            width: 100%;
-            text-align: center;
-            border: none;
-            background: transparent;
-        }
-
-        .editable-input:focus {
-            outline: 1px solid #0d6efd;
-            background: #fff;
-        }
-
-        select.editable-select {
-            width: 100%;
-            text-align: center;
-            border: none;
-            background: transparent;
-        }
-
-        select.editable-select:focus {
-            outline: 1px solid #0d6efd;
-            background: #fff;
-        }
+        .editable-input { width: 100%; text-align: center; border: none; background: transparent; }
+        .editable-input:focus { outline: 1px solid #0d6efd; background: #fff; }
+        select.editable-select { width: 100%; text-align: center; border: none; background: transparent; }
+        select.editable-select:focus { outline: 1px solid #0d6efd; background: #fff; }
     </style>
 </head>
 
@@ -120,78 +99,29 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
             </div>
             <div class="menu-title">Navigation</div>
 
-            <li class="sidebar-item">
-                <a href="admin_dashboard.php" class="sidebar-link">
-                    <i class="bi bi-cast"></i>
-                    <span style="font-size: 18px;">Dashboard</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="req_tab.php" class="sidebar-link active">
-                    <i class="bi bi-box"></i>
-                    <span style="font-size: 18px;">Employee Requests</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="ins_form.php" class="sidebar-link active">
-                    <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Ins Forms</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="stock_in.php" class="sidebar-link active">
-                    <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Stock In</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="stock_out.php" class="sidebar-link active">
-                    <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Deducted Items</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="inventory_dashboard.php" class="sidebar-link">
-                    <i class="bi bi-speedometer2"></i>
-                    <span style="font-size: 18px;">Supply Tracking</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
-                    <span>Configuration</span></a>
-            </li>
-            <li class="sidebar-item">
-                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
-                    <span>Summary</span></a>
-            </li>
-            <li class="sidebar-item">
-                <a href="archived_items.php" class="sidebar-link active"><i class="bi bi-archive"></i>
-                    <span>Archived Items</span></a>
-            </li>
-            <li class="sidebar-item">
-                <a href="../../logout.php" class="sidebar-link">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span style="font-size: 18px;">Logout</span>
-                </a>
-            </li>
+            <li class="sidebar-item"><a href="admin_dashboard.php" class="sidebar-link"><i class="bi bi-cast"></i><span style="font-size: 18px;">Dashboard</span></a></li>
+            <li class="sidebar-item"><a href="req_tab.php" class="sidebar-link active"><i class="bi bi-box"></i><span style="font-size: 18px;">Employee Requests</span></a></li>
+            <li class="sidebar-item"><a href="ins_form.php" class="sidebar-link active"><i class="bi bi-basket"></i><span style="font-size: 18px;">Ins Forms</span></a></li>
+            <li class="sidebar-item"><a href="stock_in.php" class="sidebar-link active"><i class="bi bi-basket"></i><span style="font-size: 18px;">Stock In</span></a></li>
+            <li class="sidebar-item"><a href="stock_out.php" class="sidebar-link active"><i class="bi bi-basket"></i><span style="font-size: 18px;">Deducted Items</span></a></li>
+            <li class="sidebar-item"><a href="inventory_dashboard.php" class="sidebar-link"><i class="bi bi-speedometer2"></i><span style="font-size: 18px;">Supply Tracking</span></a></li>
+            <li class="sidebar-item"><a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i><span>Configuration</span></a></li>
+            <li class="sidebar-item"><a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i><span>Summary</span></a></li>
+            <li class="sidebar-item"><a href="archived_items.php" class="sidebar-link active"><i class="bi bi-archive"></i><span>Archived Items</span></a></li>
+            <li class="sidebar-item"><a href="../../logout.php" class="sidebar-link"><i class="bi bi-box-arrow-right"></i><span style="font-size: 18px;">Logout</span></a></li>
         </aside>
 
         <div class="main">
             <div class="topbar">
-                <div class="toggle">
-                    <button class="toggler-btn"><i class="bi bi-list-ul" style="font-size:28px;"></i></button>
-                </div>
-                <div class="logo d-flex align-items-center">
-                    <span class="username me-2 fw-bold text-primary"><?= htmlspecialchars($firstname) ?> (Admin)</span>
-                </div>
+                <div class="toggle"><button class="toggler-btn"><i class="bi bi-list-ul" style="font-size:28px;"></i></button></div>
+                <div class="logo d-flex align-items-center"><span class="username me-2 fw-bold text-primary"><?= htmlspecialchars($firstname) ?> (Admin)</span></div>
             </div>
 
             <div style="width:95%; margin:20px auto; background:#f8f9fa; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                 <div class="card shadow-lg border-0 p-4 rounded-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3 class="fw-bold m-0">Configuration</h3>
-                        <input type="text" id="searchInput" class="form-control" style="max-width:280px;"
-                            placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>" onkeyup="if(event.keyCode==13) applySearch();">
+                        <input type="text" id="searchInput" class="form-control" style="max-width:280px;" placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>" onkeyup="if(event.keyCode==13) applySearch();">
                     </div>
 
                     <div class="table-responsive">
@@ -201,6 +131,7 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                                     <th>Description</th>
                                     <th class="text-center">Unit</th>
                                     <th class="text-center">Remaining Stock</th>
+                                    <th class="text-center">Threshold</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -209,7 +140,7 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                                     $onhand = $row['qty_on_hand'];
                                     $threshold = $row['threshold'] ?? 10;
                                 ?>
-                                    <tr class="<?= ($onhand < $threshold) ? 'table-danger' : ''; ?>">
+                                    <tr data-threshold="<?= $threshold ?>" class="<?= ($onhand < $threshold) ? 'table-danger' : ''; ?>">
                                         <td><input type="text" class="editable-input" data-id="<?= $row['id'] ?>" data-field="description" value="<?= htmlspecialchars($row['description']) ?>"></td>
                                         <td class="text-center">
                                             <select class="editable-select" data-id="<?= $row['id'] ?>" data-field="unit">
@@ -219,13 +150,10 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                                             </select>
                                         </td>
                                         <td class="text-center"><input type="number" class="editable-input" data-id="<?= $row['id'] ?>" data-field="qty_on_hand" value="<?= $onhand ?>" min="0"></td>
+                                        <td class="text-center"><input type="number" class="editable-input" data-id="<?= $row['id'] ?>" data-field="threshold" value="<?= $threshold ?>" min="0"></td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-warning me-1 btn-archive" data-id="<?= $row['id'] ?>">
-                                                <i class="bi bi-archive"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="<?= $row['id'] ?>">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <button type="button" class="btn btn-sm btn-warning me-1 btn-archive" data-id="<?= $row['id'] ?>"><i class="bi bi-archive"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="<?= $row['id'] ?>"><i class="bi bi-trash"></i></button>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
@@ -235,19 +163,14 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
 
                     <nav aria-label="Page navigation" class="mt-3">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page - 1 ?>">Previous</a>
-                            </li>
+                            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>"><a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page - 1 ?>">Previous</a></li>
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
-                                    <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $i ?>"><?= $i ?></a>
-                                </li>
+                                <li class="page-item <?= ($page == $i) ? 'active' : '' ?>"><a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $i ?>"><?= $i ?></a></li>
                             <?php endfor; ?>
-                            <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
-                                <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page + 1 ?>">Next</a>
-                            </li>
+                            <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>"><a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page + 1 ?>">Next</a></li>
                         </ul>
                     </nav>
+
                     <div class="alert alert-warning mt-3 fw-bold text-center">
                         ⚠️ Items highlighted in <span class="text-danger">RED</span> are below safe stock level.
                     </div>
@@ -277,24 +200,29 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                 const value = this.value;
 
                 fetch("", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: "updateField=1&id=" + encodeURIComponent(id) + "&field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value)
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success && field === 'qty_on_hand') {
-                            const row = this.closest("tr");
-                            const threshold = parseInt(row.getAttribute("data-threshold") || "10");
-                            if (parseInt(value) < threshold) {
-                                row.classList.add("table-danger");
-                            } else {
-                                row.classList.remove("table-danger");
-                            }
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "updateField=1&id=" + encodeURIComponent(id) + "&field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = this.closest("tr");
+                        let threshold = parseInt(row.getAttribute("data-threshold") || "10");
+                        let qty = parseInt(row.querySelector("[data-field='qty_on_hand']").value);
+
+                        if (field === 'threshold') {
+                            row.setAttribute("data-threshold", value);
+                            threshold = parseInt(value);
                         }
-                    });
+
+                        if (qty < threshold) {
+                            row.classList.add("table-danger");
+                        } else {
+                            row.classList.remove("table-danger");
+                        }
+                    }
+                });
             });
         });
 
@@ -305,20 +233,17 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
 
                 fetch("", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: "action=archive&id=" + encodeURIComponent(id)
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            this.closest("tr").remove();
-                        } else {
-                            alert("Failed to archive item.");
-                        }
-                    })
-                    .catch(() => alert("Error archiving item."));
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        this.closest("tr").remove();
+                    } else {
+                        alert("Failed to archive item.");
+                    }
+                });
             });
         });
 
@@ -329,25 +254,21 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
 
                 fetch("", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: "action=delete&id=" + encodeURIComponent(id)
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            this.closest("tr").remove();
-                        } else {
-                            alert("Failed to delete item.");
-                        }
-                    })
-                    .catch(() => alert("Error deleting item."));
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        this.closest("tr").remove();
+                    } else {
+                        alert("Failed to delete item.");
+                    }
+                });
             });
         });
 
-        const toggler = document.querySelector(".toggler-btn");
-        toggler.addEventListener("click", function() {
+        document.querySelector(".toggler-btn").addEventListener("click", function() {
             document.querySelector("#sidebar").classList.toggle("collapsed");
         });
     </script>

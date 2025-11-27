@@ -134,16 +134,23 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     </span>
                 </div>
             </div>
-
-            <!-- NEW CARD WRAPPER -->
             <div style="width:95%; margin:20px auto; background:#f8f9fa; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                 <div class="card shadow-lg border-0 p-4 rounded-4">
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3 class="fw-bold m-0">📦 Supply Tracker</h3>
-                        <input type="text" id="searchInput" class="form-control" style="max-width: 280px;"
-                            placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>"
-                            onkeyup="if(event.keyCode == 13) applySearch();">
+
+                        <div class="d-flex gap-2">
+                            <input type="text" id="searchInput" class="form-control" style="max-width: 280px;"
+                                placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>"
+                                onkeyup="if(event.keyCode == 13) applySearch();">
+
+                            <button class="btn btn-danger fw-bold" data-bs-toggle="modal" data-bs-target="#lowStockModal">
+                                <span style="font-size: 14px;">
+                                    <i class="bi bi-exclamation-triangle"></i> Low Stock
+                                </span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="table-responsive">
@@ -201,6 +208,69 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
         </div>
     </div>
+
+    <!-- MODALS -->
+    <div class="modal fade" id="lowStockModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-info-circle"></i> Low Stock Items
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-center">Unit</th>
+                                <th class="text-center">Remaining</th>
+                                <th class="text-center">Threshold</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $lowQuery = $conn->query("
+                SELECT * FROM items 
+                WHERE qty_on_hand < threshold 
+                ORDER BY qty_on_hand ASC
+              ");
+
+                            if ($lowQuery->num_rows > 0):
+                                while ($low = $lowQuery->fetch_assoc()):
+                            ?>
+                                    <tr>
+                                        <td><?= $low['description'] ?></td>
+                                        <td class="text-center"><?= $low['unit'] ?></td>
+
+                                        <!-- Remaining stock (NO red text) -->
+                                        <td class="fw-bold text-center"><?= $low['qty_on_hand'] ?></td>
+
+                                        <td class="text-center"><?= $low['threshold'] ?></td>
+                                    </tr>
+                                <?php endwhile;
+                            else: ?>
+                                <tr>
+                                    <td colspan="4" class="text-center fw-bold text-primary">
+                                        ✔ All items are above the safe stock level.
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="assets/admin.js"></script>
