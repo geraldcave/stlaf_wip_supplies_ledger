@@ -107,6 +107,11 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
             outline: 1px solid #0d6efd;
             background: #fff;
         }
+
+        .fixed-table {
+            table-layout: fixed;
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -188,14 +193,14 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle">
+                        <table class="table table-bordered align-middle fixed-table">
                             <thead class="table">
                                 <tr>
-                                    <th>Description</th>
-                                    <th class="text-end">Unit</th>
-                                    <th class="text-end">Stock</th>
-                                    <th class="text-end">Threshold</th>
-                                    <th class="text-end">Actions</th>
+                                    <th style="width: 40%">Description</th>
+                                    <th class="text-end" style="width: 15%">Unit</th>
+                                    <th class="text-end" style="width: 15%">Stock</th>
+                                    <th class="text-end" style="width: 15%">Threshold</th>
+                                    <th class="text-end" style="width: 15%">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="inventoryTable">
