@@ -12,35 +12,26 @@ $db = new Database();
 $conn = $db->getConnection();
 $item = new Item($conn);
 
-// ✅ Search Input
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : "";
-
-// ✅ Pagination Setup
-$limit = isset($_GET['limit']) && $_GET['limit'] > 0 ? (int) $_GET['limit'] : 10;   // Default = 10 rows/page
-$page  = isset($_GET['page']) && $_GET['page'] > 0 ? (int) $_GET['page'] : 1;      // Default = page 1
+$limit = isset($_GET['limit']) && $_GET['limit'] > 0 ? (int) $_GET['limit'] : 10;
+$page  = isset($_GET['page']) && $_GET['page'] > 0 ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// ✅ Count total items for pagination
-if ($search !== "") {
-    $countQuery = $conn->query("SELECT COUNT(*) AS total FROM items WHERE description LIKE '%$search%'");
-} else {
-    $countQuery = $conn->query("SELECT COUNT(*) AS total FROM items");
-}
+$countQuery = $search !== ""
+    ? $conn->query("SELECT COUNT(*) AS total FROM items WHERE description LIKE '%$search%' AND is_archived = 0")
+    : $conn->query("SELECT COUNT(*) AS total FROM items WHERE is_archived = 0");
 
 $totalItems = $countQuery->fetch_assoc()['total'];
-$totalPages = $totalItems > 0 ? ceil($totalItems / $limit) : 1; // Prevent Division by Zero
+$totalPages = $totalItems > 0 ? ceil($totalItems / $limit) : 1;
 
-// ✅ Fetch paginated items with search
-$query = "
-    SELECT * FROM items
-    WHERE description LIKE '%$search%'
-    ORDER BY description ASC
-    LIMIT $limit OFFSET $offset
-";
+$query = "SELECT * FROM items 
+          WHERE is_archived = 0 AND description LIKE '%$search%' 
+          ORDER BY description ASC 
+          LIMIT $limit OFFSET $offset";
 $items = $conn->query($query);
 
-// ✅ Current User Name
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
+$unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
 ?>
 
 <!DOCTYPE html>
@@ -55,6 +46,31 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/super.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .editable-input {
+            width: 100%;
+            text-align: center;
+            border: none;
+            background: transparent;
+        }
+
+        .editable-input:focus {
+            outline: 1px solid #0d6efd;
+            background: #fff;
+        }
+
+        select.editable-select {
+            width: 100%;
+            text-align: center;
+            border: none;
+            background: transparent;
+        }
+
+        select.editable-select:focus {
+            outline: 1px solid #0d6efd;
+            background: #fff;
+        }
+    </style>
 </head>
 
 <body>
@@ -123,38 +139,22 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
         <div class="main">
             <div class="topbar">
-                <div class="toggle">
-                    <button class="toggler-btn" type="button">
-                        <i class="bi bi-list-ul" style="font-size: 28px;"></i>
-                    </button>
-                </div>
-                <div class="logo d-flex align-items-center">
-                    <span class="username me-2 fw-bold text-primary">
-                        <?= htmlspecialchars($firstname) ?> (Admin)
-                    </span>
-                </div>
+                <div class="toggle"><button class="toggler-btn" type="button"><i class="bi bi-list-ul" style="font-size:28px;"></i></button></div>
+                <div class="logo d-flex align-items-center"><span class="username me-2 fw-bold text-primary"><?= htmlspecialchars($firstname) ?> (Admin)</span></div>
             </div>
+
             <div style="width:95%; margin:20px auto; background:#f8f9fa; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                 <div class="card shadow-lg border-0 p-4 rounded-4">
-
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3 class="fw-bold m-0">📦 Supply Tracker</h3>
-
                         <div class="d-flex gap-2">
-                            <input type="text" id="searchInput" class="form-control" style="max-width: 280px;"
-                                placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>"
-                                onkeyup="if(event.keyCode == 13) applySearch();">
-
-                            <button class="btn btn-danger fw-bold" data-bs-toggle="modal" data-bs-target="#lowStockModal">
-                                <span style="font-size: 14px;">
-                                    <i class="bi bi-exclamation-triangle"></i> Low Stock
-                                </span>
-                            </button>
+                            <input type="text" id="searchInput" class="form-control" style="max-width:280px;" placeholder="🔍 Search item..." value="<?= htmlspecialchars($search) ?>" onkeyup="if(event.keyCode==13) applySearch();">
+                            <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#lowStockModal"><span style="font-size:14px;"><i class="bi bi-exclamation-triangle"></i> Low Stock</span></button>
                         </div>
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle     ">
+                        <table class="table table-bordered align-middle">
                             <thead class="table">
                                 <tr>
                                     <th>Description</th>
@@ -168,13 +168,13 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                     $onhand = $row['qty_on_hand'];
                                     $threshold = $row['threshold'] ?? 10;
                                 ?>
-                                    <tr class="<?= ($onhand < $threshold) ? 'table-danger' : ''; ?>">
+                                    <tr class="<?= ($onhand < $threshold) ? 'table-warning' : ''; ?>">
                                         <td><?= $row['description']; ?></td>
                                         <td class="text-center"><?= $row['unit']; ?></td>
                                         <td class="fw-bold text-center"><?= $onhand; ?></td>
                                         <td class="text-center">
                                             <?php if ($onhand < $threshold): ?>
-                                                <span class="badge bg-danger">LOW STOCK</span>
+                                                <span class="badge bg-warning text-dark">LOW STOCK</span>
                                             <?php else: ?>
                                                 <span class="badge bg-success">OK</span>
                                             <?php endif; ?>
@@ -184,43 +184,32 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                             </tbody>
                         </table>
                     </div>
+
                     <nav aria-label="Page navigation" class="mt-3">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page - 1 ?>">Previous</a>
-                            </li>
+                            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>"><a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page - 1 ?>">Previous</a></li>
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
-                                    <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $i ?>"><?= $i ?></a>
-                                </li>
+                                <li class="page-item <?= ($page == $i) ? 'active' : '' ?>"><a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $i ?>"><?= $i ?></a></li>
                             <?php endfor; ?>
-                            <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
-                                <a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page + 1 ?>">Next</a>
-                            </li>
+                            <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>"><a class="page-link" href="?search=<?= urlencode($search) ?>&page=<?= $page + 1 ?>">Next</a></li>
                         </ul>
                     </nav>
-                    <div class="alert alert-warning mt-3 fw-bold text-center">
-                        ⚠️ Items highlighted in <span class="text-danger">RED</span> are below safe stock level.
-                    </div>
 
+                    <div class="alert alert-warning mt-3 fw-bold text-center">
+                        ⚠️ Items highlighted in <span class="text-warning">YELLOW</span> are below safe stock level.
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- MODALS -->
     <div class="modal fade" id="lowStockModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
-
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">
-                        <i class="bi bi-info-circle"></i> Low Stock Items
-                    </h5>
+                    <h5 class="modal-title"><i class="bi bi-info-circle"></i> Low Stock Items</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-
                 <div class="modal-body">
                     <table class="table table-bordered table-hover">
                         <thead class="table-primary">
@@ -233,49 +222,33 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                         </thead>
                         <tbody>
                             <?php
-                            $lowQuery = $conn->query("
-                SELECT * FROM items 
-                WHERE qty_on_hand < threshold 
-                ORDER BY qty_on_hand ASC
-              ");
-
+                            $lowQuery = $conn->query("SELECT * FROM items WHERE qty_on_hand < threshold AND is_archived = 0 ORDER BY qty_on_hand ASC");
                             if ($lowQuery->num_rows > 0):
                                 while ($low = $lowQuery->fetch_assoc()):
                             ?>
                                     <tr>
                                         <td><?= $low['description'] ?></td>
                                         <td class="text-center"><?= $low['unit'] ?></td>
-
-                                        <!-- Remaining stock (NO red text) -->
                                         <td class="fw-bold text-center"><?= $low['qty_on_hand'] ?></td>
-
                                         <td class="text-center"><?= $low['threshold'] ?></td>
                                     </tr>
                                 <?php endwhile;
                             else: ?>
                                 <tr>
-                                    <td colspan="4" class="text-center fw-bold text-primary">
-                                        ✔ All items are above the safe stock level.
-                                    </td>
+                                    <td colspan="4" class="text-center fw-bold text-primary">✔ All items are above the safe stock level.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
-
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
-
             </div>
         </div>
     </div>
 
-
     <script src="../../assets/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="assets/admin.js"></script>
-
-    <!-- LIVE SEARCH SCRIPT -->
     <script>
         document.getElementById("searchInput").addEventListener("keyup", function() {
             let value = this.value.toLowerCase();
@@ -288,6 +261,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             let val = document.getElementById("searchInput").value;
             window.location.href = "?search=" + encodeURIComponent(val) + "&page=1";
         }
+        const toggler = document.querySelector(".toggler-btn");
+        toggler.addEventListener("click", function() {
+            document.querySelector("#sidebar").classList.toggle("collapsed");
+        });
     </script>
 </body>
 

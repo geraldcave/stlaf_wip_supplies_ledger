@@ -85,25 +85,25 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="req_tab.php" class="sidebar-link">
+                <a href="req_tab.php" class="sidebar-link active">
                     <i class="bi bi-box"></i>
                     <span style="font-size: 18px;">Employee Requests</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="ins_form.php" class="sidebar-link">
+                <a href="ins_form.php" class="sidebar-link active">
                     <i class="bi bi-basket"></i>
                     <span style="font-size: 18px;">Ins Forms</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="stock_in.php" class="sidebar-link">
+                <a href="stock_in.php" class="sidebar-link active">
                     <i class="bi bi-basket"></i>
                     <span style="font-size: 18px;">Stock In</span>
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="stock_out.php" class="sidebar-link">
+                <a href="stock_out.php" class="sidebar-link active">
                     <i class="bi bi-basket"></i>
                     <span style="font-size: 18px;">Deducted Items</span>
                 </a>
@@ -115,11 +115,11 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="config_item.php" class="sidebar-link"><i class="bi bi-gear"></i>
+                <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Configuration</span></a>
             </li>
             <li class="sidebar-item">
-                <a href="summary.php" class="sidebar-link"><i class="bi bi-clipboard-data"></i>
+                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
                     <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
@@ -228,12 +228,12 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                 if (!confirm("Restore this item to active list?")) return;
 
                 fetch("", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: "action=restore&id=" + encodeURIComponent(id)
-                })
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: "action=restore&id=" + encodeURIComponent(id)
+                    })
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
@@ -252,12 +252,12 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                 if (!confirm("Permanently delete this item? This cannot be undone.")) return;
 
                 fetch("", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: "action=delete&id=" + encodeURIComponent(id)
-                })
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: "action=delete&id=" + encodeURIComponent(id)
+                    })
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {

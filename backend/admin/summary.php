@@ -68,6 +68,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 <img src="../../assets/images/official_logo.png" width="80px" height="80px">
             </div>
             <div class="menu-title">Navigation</div>
+
             <li class="sidebar-item">
                 <a href="admin_dashboard.php" class="sidebar-link">
                     <i class="bi bi-cast"></i>
@@ -109,7 +110,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <span>Configuration</span></a>
             </li>
             <li class="sidebar-item">
-                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i>
+                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
                     <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
