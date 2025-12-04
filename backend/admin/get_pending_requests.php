@@ -19,7 +19,7 @@ if (!empty($requests)):
     foreach ($requests as $r):
         if (in_array(strtolower($r['status']), ['cancelled', 'delivered'])) continue;
         $hasPending = true;
-        ?>
+?>
         <tr class="text-center">
             <td><span class="fw-bold text-primary"><?= htmlspecialchars($r['req_id']) ?></span></td>
             <td><?= htmlspecialchars($r['name']) ?></td>
@@ -38,15 +38,27 @@ if (!empty($requests)):
 
             <td>
                 <?php if (strtolower($r['status']) === 'pending'): ?>
-                    <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Approved')" class="btn btn-success btn-sm px-3 shadow-sm">Approve</button>
-                    <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Cancelled')" class="btn btn-danger btn-sm px-3 shadow-sm">Decline</button>
+                    <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Approved')" class="btn btn-success btn-sm px-2 shadow-sm">
+                        Approve
+                    </button>
+
+                    <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Cancelled')" class="btn btn-danger btn-sm px-2 shadow-sm">
+                        Decline
+                    </button>
 
                 <?php elseif (strtolower($r['status']) === 'approved'): ?>
-                    <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Delivered')" class="btn btn-primary btn-sm px-3 shadow-sm">Delivered</button>
+                    <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Delivered')" class="btn btn-primary btn-sm px-2 shadow-sm">
+                        Delivered
+                    </button>
                 <?php endif; ?>
+
+                <button onclick="deleteRequest(<?= $r['req_id'] ?>)" class="btn btn-outline-danger btn-sm px-2 shadow-sm">
+                    <i class="bi bi-trash"></i>
+                </button>
             </td>
+
         </tr>
-        <?php
+    <?php
     endforeach;
 endif;
 

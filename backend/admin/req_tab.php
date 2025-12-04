@@ -157,13 +157,19 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
                                                 <td>
                                                     <?php if (strtolower($r['status']) === 'pending'): ?>
-                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Approved')" class="btn btn-success btn-sm px-3 shadow-sm">Approve</button>
-                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Cancelled')" class="btn btn-danger btn-sm px-3 shadow-sm">Decline</button>
+                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Approved')" class="btn btn-success btn-sm px-2 shadow-sm">Approve</button>
+
+                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Cancelled')" class="btn btn-danger btn-sm px-2 shadow-sm">Decline</button>
 
                                                     <?php elseif (strtolower($r['status']) === 'approved'): ?>
-                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Delivered')" class="btn btn-primary btn-sm px-3 shadow-sm">Delivered</button>
+                                                        <button onclick="updateRequestStatus(<?= $r['req_id'] ?>, 'Delivered')" class="btn btn-primary btn-sm px-2 shadow-sm">Delivered</button>
                                                     <?php endif; ?>
+
+                                                    <button onclick="deleteRequest(<?= $r['req_id'] ?>)" class="btn btn-outline-danger btn-sm px-2 shadow-sm">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
                                                 </td>
+
                                             </tr>
                                         <?php
                                         endforeach;
@@ -310,6 +316,28 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 }
             });
         });
+
+        function deleteRequest(reqId) {
+            if (!confirm("Are you sure you want to permanently delete this request?")) return;
+
+            fetch("delete_request.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "request_id=" + reqId
+                })
+                .then(res => res.text())
+                .then(response => {
+                    console.log(response); // ✅ DEBUG LINE
+                    alert( response);
+
+                    if (response.trim() === "success") {
+                        loadPendingRequests();
+                    }
+                })
+                .catch(err => console.error("Delete error:", err));
+        }
     </script>
 
 </body>
