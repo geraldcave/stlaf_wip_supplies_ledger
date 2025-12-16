@@ -4,8 +4,8 @@ const data = stats.map(item => parseInt(item.total_qty_out ?? item.qty_out ?? 0)
 const chartCanvas = document.getElementById("stockOutChart");
 
 // Each bar is 30px, spacing 5px
-const barHeight = 30;
-const barSpacing = 5;
+const barHeight = 20;
+const barSpacing = 23;
 
 // Total canvas height
 chartCanvas.height = labels.length * (barHeight + barSpacing);

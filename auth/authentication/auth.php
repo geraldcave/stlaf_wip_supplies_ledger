@@ -66,7 +66,7 @@ class User
                 header("Location: backend/hr/hr_dashboard.php");
                 break;
             case 'accounting':
-                header("Location: backend/accounting/accounting_dashboard.php");
+                header("Location: backend/accounting/auditing.php");
                 break;
             case 'admin':
                 header("Location: backend/admin/admin_dashboard.php");
