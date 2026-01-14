@@ -109,6 +109,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Configuration</span></a>
             </li>
+             <li class="sidebar-item">
+                <a href="supply.php" class="sidebar-link active"><i class="bi bi-gear"></i>
+                    <span>Update Supplier & Date</span></a>
+            </li>
             <li class="sidebar-item">
                 <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
                     <span>Summary</span></a>

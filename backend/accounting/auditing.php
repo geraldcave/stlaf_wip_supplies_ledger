@@ -15,10 +15,9 @@ $selectedMonday = $_GET['week'] ?? date('Y-m-d', strtotime('monday this week'));
 $startOfWeek = date('Y-m-d', strtotime($selectedMonday));
 $endOfWeek = date('Y-m-d', strtotime($selectedMonday . ' +4 days')); // Monday to Friday
 
-// Format display like "Dec 15-20, 2025"
+// Format display like "Dec 15-19, 2025"
 $weekDisplay = date('M d', strtotime($startOfWeek)) . '-' . date('d, Y', strtotime($endOfWeek));
 
-// ✅ Weekly Audit Summary
 $db = new Database();
 $conn = $db->getConnection();
 

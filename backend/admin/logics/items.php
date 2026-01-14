@@ -8,26 +8,24 @@ class Item
         $this->conn = $conn;
     }
 
-    public function addItem($description, $unit, $unit_price, $supplier, $department, $threshold)
+    public function addItem($description, $unit, $unit_price, $supplier, $department, $threshold, $date_added)
     {
-        if ($unit_price < 0) {
-            $unit_price = 0;
-        }
-        if ($threshold < 0) {
-            $threshold = 0;
-        }
+        if ($unit_price < 0) { $unit_price = 0; }
+        if ($threshold < 0) { $threshold = 0; }
 
         $stmt = $this->conn->prepare("
-            INSERT INTO items (description, unit, unit_price, supplier, department, threshold)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO items (description, unit, unit_price, supplier, department, threshold, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("ssdssi", $description, $unit, $unit_price, $supplier, $department, $threshold);
+
+        $stmt->bind_param("ssdssis", $description, $unit, $unit_price, $supplier, $department, $threshold, $date_added);
+
         return $stmt->execute();
     }
 
     public function getAllItems()
     {
-        $sql = "SELECT id, description, unit, qty_on_hand, threshold 
+        $sql = "SELECT id, description, unit, qty_on_hand, threshold, created_at 
                 FROM items 
                 WHERE is_archived = 0
                 ORDER BY description ASC";
@@ -55,3 +53,5 @@ class Item
         return $stmt->execute();
     }
 }
+
+?>

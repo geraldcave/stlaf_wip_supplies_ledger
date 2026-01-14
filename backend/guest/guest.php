@@ -49,6 +49,7 @@ $items = $conn->query("SELECT id, description, unit FROM items ORDER BY descript
                         <option value="marketing">Marketing</option>
                         <option value="it">IT</option>
                         <option value="ops">Operations</option>
+                        <option value="admin">Admin</option>
                     </select>
                 </div>
                 <h5 class="mb-2 fw-bold">Request Details</h5>

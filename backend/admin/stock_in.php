@@ -17,11 +17,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $saved = true;
 
     for ($i = 0; $i < count($_POST['item_id']); $i++) {
-
         $result = $stock->addStockIn(
             $_POST['item_id'][$i],
             $_POST['qty_in'][$i],
-            $_POST['remarks'][$i]
+            $_POST['remarks'][$i],
+            $_POST['supplier'][$i] ?? '',             // Updates Supplier in items table
+            $_POST['stock_date'][$i] ?? date('Y-m-d') // Updates Date in items table
         );
 
         if (!$result) {
@@ -34,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
-// Retrieve saved status from session after redirect
 if (isset($_SESSION['stock_saved'])) {
     $saved = $_SESSION['stock_saved'];
     unset($_SESSION['stock_saved']);
@@ -60,7 +60,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
 <body>
     <div class="d-flex">
-
         <aside id="sidebar" class="sidebar-toggle">
             <div class="sidebar-logo mt-3">
                 <img src="../../assets/images/official_logo.png" width="80px" height="80px">
@@ -108,7 +107,11 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     <span>Configuration</span></a>
             </li>
             <li class="sidebar-item">
-                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i>
+                <a href="supply.php" class="sidebar-link active"><i class="bi bi-gear"></i>
+                    <span>Update Supplier & Date</span></a>
+            </li>
+            <li class="sidebar-item">
+                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
                     <span>Summary</span></a>
             </li>
             <li class="sidebar-item">
@@ -124,7 +127,6 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
         </aside>
 
         <div class="main">
-
             <div class="topbar">
                 <div class="toggle">
                     <button class="toggler-btn" type="button">
@@ -137,9 +139,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                     </span>
                 </div>
             </div>
-
             <div class="container mt-4">
-
                 <?php if (isset($saved) && $saved): ?>
                     <div class="alert alert-success fw-bold">✅ Stock Updated Successfully!</div>
                 <?php elseif (isset($saved) && !$saved): ?>
@@ -148,14 +148,11 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
                 <div class="card shadow p-4 border-0">
                     <h4 class="fw-bold" style="color: #123765;">Stock In Form</h4>
-
                     <form method="POST">
-
                         <div id="stockRows">
+                            <div class="row stock-row border rounded p-3 mb-3 align-items-end">
 
-                            <div class="row stock-row border rounded p-3 mb-3">
-
-                                <div class="col-md-6 mb-2">
+                                <div class="col-md-3 mb-2">
                                     <label class="form-label fw-bold">Select Item</label>
                                     <select name="item_id[]" class="form-select select2-item" required>
                                         <option value="">-- Select Item --</option>
@@ -171,7 +168,17 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                 </div>
 
                                 <div class="col-md-3 mb-2">
-                                    <label class="form-label fw-bold">Quantity</label>
+                                    <label class="form-label fw-bold">Supplier</label>
+                                    <input type="text" name="supplier[]" class="form-control" placeholder="Supplier Name">
+                                </div>
+
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label fw-bold">Date</label>
+                                    <input type="date" name="stock_date[]" class="form-control" value="<?= date('Y-m-d'); ?>" required>
+                                </div>
+
+                                <div class="col-md-1 mb-2">
+                                    <label class="form-label fw-bold">Qty</label>
                                     <input type="number" name="qty_in[]" min="1" class="form-control" required>
                                 </div>
 
@@ -180,24 +187,21 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                     <input type="text" name="remarks[]" class="form-control">
                                 </div>
 
-                                <div class="col-md-1 d-flex align-items-end">
+                                <div class="col-md-1 mb-2">
                                     <button type="button" class="btn btn-danger w-100 remove-row">
                                         <i class="bi bi-dash-circle"></i>
                                     </button>
                                 </div>
 
                             </div>
-
                         </div>
 
                         <button type="button" id="addRow" class="btn btn-secondary fw-bold mb-3">
                             <i class="bi bi-plus-circle"></i> Add Another Item
                         </button>
-
                         <button class="btn w-100 text-white fw-bold" style="background:#123765;">
                             Save Stock In
                         </button>
-
                     </form>
                 </div>
             </div>

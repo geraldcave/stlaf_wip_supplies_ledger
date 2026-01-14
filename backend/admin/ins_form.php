@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['department']) !== 'adm
 $db = new Database();
 $conn = $db->getConnection();
 $item = new Item($conn);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     for ($i = 0; $i < count($_POST['description']); $i++) {
@@ -20,7 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_POST['unit_price'][$i],
             $_POST['supplier'][$i],
             $_POST['department'][$i],
-            $_POST['threshold'][$i]
+            $_POST['threshold'][$i],
+            $_POST['date_added'][$i] ?? date('Y-m-d')
         );
     }
 
@@ -93,6 +95,10 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Configuration</span></a>
             </li>
+             <li class="sidebar-item">
+                <a href="supply.php" class="sidebar-link active"><i class="bi bi-gear"></i>
+                    <span>Update Supplier & Date</span></a>
+            </li>
             <li class="sidebar-item">
                 <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
                     <span>Summary</span></a>
@@ -159,9 +165,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                     <input type="number" step="0.01" name="unit_price[]" class="form-control">
                                 </div>
 
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label fw-bold">Supplier</label>
+                                <div class="col-md-4 mb-2"> <label class="form-label fw-bold">Supplier</label>
                                     <input type="text" name="supplier[]" class="form-control">
+                                </div>
+
+                                <div class="col-md-3 mb-2"> <label class="form-label fw-bold">Date</label>
+                                    <input type="date" name="date_added[]" class="form-control" value="<?= date('Y-m-d'); ?>" required>
                                 </div>
 
                                 <div class="col-md-3 mb-2">
@@ -177,8 +186,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                     </select>
                                 </div>
 
-                                <div class="col-md-2 mb-2">
-                                    <label class="form-label fw-bold">Threshold</label>
+                                <div class="col-md-1 mb-2"> <label class="form-label fw-bold">Threshold</label>
                                     <input type="number" name="threshold[]" value="0" class="form-control">
                                 </div>
 
@@ -187,17 +195,16 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                         <i class="bi bi-dash-circle"></i>
                                     </button>
                                 </div>
+
                             </div>
 
-                        </div>
+                            <button type="button" id="addRow" class="btn btn-secondary fw-bold mb-3">
+                                <i class="bi bi-plus-circle"></i> Add Another Item
+                            </button>
 
-                        <button type="button" id="addRow" class="btn btn-secondary fw-bold mb-3">
-                            <i class="bi bi-plus-circle"></i> Add Another Item
-                        </button>
-
-                        <button class="btn w-100 text-white fw-bold" style="background:#123765;">
-                            Save All Items
-                        </button>
+                            <button class="btn w-100 text-white fw-bold" style="background:#123765;">
+                                Save All Items
+                            </button>
                     </form>
 
                 </div>
