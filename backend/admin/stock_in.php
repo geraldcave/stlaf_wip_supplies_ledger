@@ -12,17 +12,29 @@ $db = new Database();
 $conn = $db->getConnection();
 $stock = new StockIn($conn);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// HANDLE POST
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['item_id'])) {
 
     $saved = true;
 
     for ($i = 0; $i < count($_POST['item_id']); $i++) {
+
+        $item_id    = $_POST['item_id'][$i] ?? null;
+        $qty_in     = $_POST['qty_in'][$i] ?? 0;
+        $remarks    = $_POST['remarks'][$i] ?? '';
+        $supplier   = $_POST['supplier'][$i] ?? '';
+        $stock_date = $_POST['stock_date'][$i] ?? date('Y-m-d');
+
+        if (!$item_id || $qty_in <= 0) {
+            continue;
+        }
+
         $result = $stock->addStockIn(
-            $_POST['item_id'][$i],
-            $_POST['qty_in'][$i],
-            $_POST['remarks'][$i],
-            $_POST['supplier'][$i] ?? '',             // Updates Supplier in items table
-            $_POST['stock_date'][$i] ?? date('Y-m-d') // Updates Date in items table
+            $item_id,
+            $qty_in,
+            $remarks,
+            $supplier,
+            $stock_date
         );
 
         if (!$result) {
@@ -35,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
+// READ FLASH MESSAGE
 if (isset($_SESSION['stock_saved'])) {
     $saved = $_SESSION['stock_saved'];
     unset($_SESSION['stock_saved']);
@@ -42,6 +55,7 @@ if (isset($_SESSION['stock_saved'])) {
 
 $items = $stock->getItems();
 $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
