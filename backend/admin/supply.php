@@ -239,7 +239,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                             <input type="text" class="editable-input text-center" 
                                                    data-id="<?= $row['id'] ?>" 
                                                    data-field="last_stock_added" 
-                                                   value="<?= htmlspecialchars($row['last_stock_added']) ?>"readonly>
+                                                   value="<?= htmlspecialchars($row['last_stock_added']) ?>">
                                         </td>
 
                                         <td>
