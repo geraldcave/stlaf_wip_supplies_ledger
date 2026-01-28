@@ -164,7 +164,7 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
                     <span>Configuration</span></a>
             </li>
              <li class="sidebar-item">
-                <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
+                <a href="supply.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Update Supplier & Date</span></a>
             </li>
             <li class="sidebar-item">

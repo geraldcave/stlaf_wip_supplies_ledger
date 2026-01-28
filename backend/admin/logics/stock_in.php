@@ -7,7 +7,7 @@ class StockIn
     {
         $this->conn = $conn;
     }
-    
+
     public function addItem($description, $unit, $unit_price, $supplier, $department, $threshold, $qty_on_hand)
     {
         $stmt = $this->conn->prepare("
@@ -31,12 +31,13 @@ class StockIn
         $stmt2 = $this->conn->prepare("
             UPDATE items 
             SET qty_on_hand = qty_on_hand + ?, 
+                last_stock_added = ?, 
                 supplier = ?, 
                 created_at = ? 
             WHERE id = ?
         ");
 
-        $stmt2->bind_param("issi", $qty_in, $supplier, $stock_date, $item_id);
+        $stmt2->bind_param("iissi", $qty_in, $qty_in, $supplier, $stock_date, $item_id);
 
         return $stmt2->execute();
     }

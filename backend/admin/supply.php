@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $value = $_POST['value'];
 
         // Allowed columns to prevent SQL injection
-        $allowed = ['description', 'supplier', 'created_at'];
+        $allowed = ['description', 'supplier', 'created_at', 'unit_price','last_stock_added'];
         
         if (in_array($field, $allowed)) {
             $stmt = $conn->prepare("UPDATE items SET $field = ? WHERE id = ?");
@@ -204,6 +204,8 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                 <tr class="fw-bold text-center">
                                     <th style="width: 40%">Description</th>
                                     <th style="width: 25%">Supplier</th>
+                                    <th style="width: 25%">Price</th>
+                                    <th style="width: 25%">Last stock add</th>
                                     <th style="width: 25%">Date Added</th>
                                     <th style="width: 10%">Action</th>
                                 </tr>
@@ -218,7 +220,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                             <input type="text" class="editable-input fw-bold" 
                                                    data-id="<?= $row['id'] ?>" 
                                                    data-field="description" 
-                                                   value="<?= htmlspecialchars($row['description']) ?>">
+                                                   value="<?= htmlspecialchars($row['description']) ?>" readonly>
                                         </td>
 
                                         <td>
@@ -226,6 +228,18 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                                                    data-id="<?= $row['id'] ?>" 
                                                    data-field="supplier" 
                                                    value="<?= htmlspecialchars($row['supplier']) ?>">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="editable-input text-center" 
+                                                   data-id="<?= $row['id'] ?>" 
+                                                   data-field="unit_price" 
+                                                   value="<?= htmlspecialchars($row['unit_price']) ?>">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="editable-input text-center" 
+                                                   data-id="<?= $row['id'] ?>" 
+                                                   data-field="last_stock_added" 
+                                                   value="<?= htmlspecialchars($row['last_stock_added']) ?>"readonly>
                                         </td>
 
                                         <td>
