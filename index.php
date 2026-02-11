@@ -10,6 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
   }
 
+  if (isset($_POST['book_meeting'])) {
+    $user->loginAsMeetingGuest();
+    exit;
+  }
+
   if (isset($_POST['username']) && isset($_POST['password'])) {
     if (!$user->login($_POST['username'], $_POST['password'])) {
       $message = "Invalid username/email or password.";
@@ -55,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <form method="post">
         <button type="submit" name="login_as_employee" class="guest-btn">Login as Guest</button>
+        <!-- <button type="submit" name="book_meeting" class="guest-btn">Book a meeting!</button> -->
       </form>
     </div>
   </div>

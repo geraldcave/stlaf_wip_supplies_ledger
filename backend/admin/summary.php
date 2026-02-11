@@ -109,7 +109,7 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Configuration</span></a>
             </li>
-             <li class="sidebar-item">
+            <li class="sidebar-item">
                 <a href="supply.php" class="sidebar-link active"><i class="bi bi-gear"></i>
                     <span>Update Supplier & Date</span></a>
             </li>
@@ -169,6 +169,9 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
 
                     <a href="download_summary.php?month=<?= $month ?>&year=<?= $year ?>" class="btn btn-danger">
                         <i class="bi bi-file-earmark-pdf"></i> Download PDF
+                    </a>
+                    <a href="download_detailed_records.php?month=<?= $month ?>&year=<?= $year ?>" class="btn btn-success">
+                        <i class="bi bi-list-check"></i> Download Detailed PDF
                     </a>
                 </form>
 

@@ -26,7 +26,7 @@ class User
             $dbPassword = $user['password'];
             if (password_verify($password, $dbPassword) || $password === $dbPassword) {
                 if (!password_verify($password, $dbPassword)) {
-                
+
                     $hashed = password_hash($dbPassword, PASSWORD_DEFAULT);
                     $updateStmt = $this->conn->prepare("UPDATE users SET password = ? WHERE user_id = ?");
                     $updateStmt->bind_param("si", $hashed, $user['user_id']);
@@ -38,22 +38,22 @@ class User
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['department'] = $user['department'];
 
-            
+
                 $this->redirectToDashboard($user['department']);
                 exit();
             }
         }
 
-        return false; 
+        return false;
     }
 
     public function loginAsEmployee()
     {
         session_start();
         $_SESSION['show_guest_alert'] = true;
-        $_SESSION['user_id'] = 1;  
-        $_SESSION['username'] = 'employee'; 
-        $_SESSION['department'] = 'employee'; 
+        $_SESSION['user_id'] = 1;
+        $_SESSION['username'] = 'employee';
+        $_SESSION['department'] = 'employee';
 
         header("Location: backend/guest/guest_dashboard.php");
         exit();
@@ -89,6 +89,15 @@ class User
             default:
                 header("Location: index.php");
         }
+        exit();
+    }
+
+    public function loginAsMeetingGuest()
+    {
+        session_start();
+        $_SESSION['booking_mode'] = true;
+
+        header("Location: backend/booking/booking.php");
         exit();
     }
 }
