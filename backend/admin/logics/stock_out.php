@@ -69,30 +69,26 @@ class StockOut
 
     //     return $this->conn->query($sql);
     // }
-    public function getStockOutStatistics($month = null, $year = null)
+    public function getStockOutStatistics($month = null, $year = null, $department = null)
     {
-        $sql = "
-        SELECT 
-            i.description AS item_name,
-            SUM(COALESCE(s.qty_out, 0)) AS total_qty_out
-        FROM items i
-        LEFT JOIN stock_out s ON i.id = s.item_id
-        WHERE 1
-    ";
+        // Basic query
+        $query = "SELECT item AS item_name, SUM(quantity) as total_qty_out 
+              FROM req_form
+              WHERE status = 'Delivered'"; // Adjust table name if necessary
 
-        if (!empty($month)) {
-            $sql .= " AND MONTH(s.date_out) = " . intval($month);
+        // Add filters dynamically
+        if ($month) {
+            $query .= " AND MONTH(date_req) = '" . $this->conn->real_escape_string($month) . "'";
+        }
+        if ($year) {
+            $query .= " AND YEAR(date_req) = '" . $this->conn->real_escape_string($year) . "'";
+        }
+        if ($department) {
+            $query .= " AND department = '" . $this->conn->real_escape_string($department) . "'";
         }
 
-        if (!empty($year)) {
-            $sql .= " AND YEAR(s.date_out) = " . intval($year);
-        }
+        $query .= " GROUP BY item ORDER BY total_qty_out DESC";
 
-        $sql .= "
-        GROUP BY i.id
-        ORDER BY total_qty_out DESC
-    ";
-
-        return $this->conn->query($sql);
+        return $this->conn->query($query);
     }
 }

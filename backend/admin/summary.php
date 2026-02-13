@@ -12,10 +12,13 @@ $db = new Database();
 $conn = $db->getConnection();
 $stock = new StockOut($conn);
 
+// Capture all filters
 $month = $_GET['month'] ?? null;
 $year = $_GET['year'] ?? null;
+$department = $_GET['department'] ?? null;
 
-$statsResult = $stock->getStockOutStatistics($month, $year);
+// Pass department to your statistics logic (Ensure your getStockOutStatistics method is updated to accept it)
+$statsResult = $stock->getStockOutStatistics($month, $year, $department);
 
 $stats = [];
 while ($row = $statsResult->fetch_assoc()) {
@@ -58,75 +61,146 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
             display: block;
             width: 100% !important;
         }
+
+        .filter-form-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
     </style>
 </head>
 
 <body>
     <div class="d-flex">
         <aside id="sidebar" class="sidebar-toggle">
+
             <div class="sidebar-logo mt-3">
+
                 <img src="../../assets/images/official_logo.png" width="80px" height="80px">
+
             </div>
+
             <div class="menu-title">Navigation</div>
 
+
+
             <li class="sidebar-item">
+
                 <a href="admin_dashboard.php" class="sidebar-link">
+
                     <i class="bi bi-cast"></i>
+
                     <span style="font-size: 18px;">Dashboard</span>
+
                 </a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="req_tab.php" class="sidebar-link active">
+
                     <i class="bi bi-box"></i>
+
                     <span style="font-size: 18px;">Employee Requests</span>
+
                 </a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="ins_form.php" class="sidebar-link active">
+
                     <i class="bi bi-basket"></i>
+
                     <span style="font-size: 18px;">Ins Forms</span>
+
                 </a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="stock_in.php" class="sidebar-link active">
+
                     <i class="bi bi-basket"></i>
+
                     <span style="font-size: 18px;">Stock In</span>
+
                 </a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="stock_out.php" class="sidebar-link active">
+
                     <i class="bi bi-basket"></i>
+
                     <span style="font-size: 18px;">Deducted Items</span>
+
                 </a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="inventory_dashboard.php" class="sidebar-link">
+
                     <i class="bi bi-speedometer2"></i>
+
                     <span style="font-size: 18px;">Supply Tracking</span>
+
                 </a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
+
                     <span>Configuration</span></a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="supply.php" class="sidebar-link active"><i class="bi bi-gear"></i>
+
                     <span>Update Supplier & Date</span></a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
+
                     <span>Summary</span></a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="archived_items.php" class="sidebar-link active"><i class="bi bi-archive"></i>
+
                     <span>Archived Items</span></a>
+
             </li>
+
             <li class="sidebar-item">
+
                 <a href="../../logout.php" class="sidebar-link">
+
                     <i class="bi bi-box-arrow-right"></i>
+
                     <span style="font-size: 18px;">Logout</span>
+
                 </a>
+
             </li>
+
         </aside>
 
         <div class="main">
@@ -143,35 +217,46 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
                 </div>
             </div>
 
-            <div style="background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
-                <form method="GET" id="filterForm" class="d-flex gap-2 mb-3" style="max-width:420px;">
-                    <select name="month" class="form-select" id="monthSelect">
+            <div class="filter-form-container">
+                <form method="GET" id="filterForm" class="d-flex flex-wrap gap-2 mb-3">
+                    <select name="month" class="form-select w-auto" id="monthSelect">
                         <option value="">All Months</option>
                         <?php
                         for ($m = 1; $m <= 12; $m++) {
-                            $selected = (isset($_GET['month']) && $_GET['month'] == $m) ? 'selected' : '';
+                            $selected = ($month == $m) ? 'selected' : '';
                             echo "<option value='$m' $selected>" . date("F", mktime(0, 0, 0, $m, 1)) . "</option>";
                         }
                         ?>
                     </select>
 
-                    <select name="year" class="form-select" id="yearSelect">
+                    <select name="year" class="form-select w-auto" id="yearSelect">
                         <option value="">All Years</option>
                         <?php
                         $startYear = 2024;
                         $currentYear = date("Y");
                         for ($y = $currentYear; $y >= $startYear; $y--) {
-                            $selected = (isset($_GET['year']) && $_GET['year'] == $y) ? 'selected' : '';
+                            $selected = ($year == $y) ? 'selected' : '';
                             echo "<option value='$y' $selected>$y</option>";
                         }
                         ?>
                     </select>
 
-                    <a href="download_summary.php?month=<?= $month ?>&year=<?= $year ?>" class="btn btn-danger">
-                        <i class="bi bi-file-earmark-pdf"></i> Download PDF
+                    <select name="department" class="form-select w-auto" id="deptSelect">
+                        <option value="">All Departments</option>
+                        <?php
+                        $depts = ['HR', 'MARKETING', 'ACCOUNTING', 'LITIGATION', 'IT', 'ADMIN', 'CORPORATE', 'OPERATIONS'];
+                        foreach ($depts as $d) {
+                            $selected = ($department == $d) ? 'selected' : '';
+                            echo "<option value='$d' $selected>$d</option>";
+                        }
+                        ?>
+                    </select>
+
+                    <a href="download_summary.php?month=<?= $month ?>&year=<?= $year ?>&department=<?= $department ?>" class="btn btn-danger">
+                        <i class="bi bi-file-earmark-pdf"></i> Summary PDF
                     </a>
-                    <a href="download_detailed_records.php?month=<?= $month ?>&year=<?= $year ?>" class="btn btn-success">
-                        <i class="bi bi-list-check"></i> Download Detailed PDF
+                    <a href="download_detailed_records.php?month=<?= $month ?>&year=<?= $year ?>&department=<?= $department ?>" class="btn btn-success">
+                        <i class="bi bi-list-check"></i> Detailed PDF
                     </a>
                 </form>
 
@@ -187,11 +272,12 @@ $firstname = ucfirst($_SESSION['username'] ?? 'Admin');
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
         const stats = <?= json_encode($stats) ?>;
-        document.getElementById('monthSelect').addEventListener('change', function() {
-            document.getElementById('filterForm').submit();
-        });
-        document.getElementById('yearSelect').addEventListener('change', function() {
-            document.getElementById('filterForm').submit();
+
+        // Auto-submit form on change for all dropdowns
+        ['monthSelect', 'yearSelect', 'deptSelect'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => {
+                document.getElementById('filterForm').submit();
+            });
         });
     </script>
     <script src="assets/sum.js"></script>
