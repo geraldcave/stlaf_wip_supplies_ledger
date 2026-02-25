@@ -45,13 +45,14 @@ $requests = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
     <div class="container-fluid mt-4">
         <div class="row g-4">
-            <div class="col-md-4">
+            <!-- On small screens (default), the form is order 1. On medium screens and up, it is order 1. -->
+            <div class="col-md-4 order-1 order-md-1">
                 <?php include "guest.php"; ?>
             </div>
-            <div class="col-md-8">
+            <!-- On small screens (default), the list is order 2. On medium screens and up, it is order 2. -->
+            <div class="col-md-8 order-2 order-md-2">
                 <?php include "req_list.php"; ?>
             </div>
-
         </div>
     </div>
 

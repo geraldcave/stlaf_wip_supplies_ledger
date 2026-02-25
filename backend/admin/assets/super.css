@@ -127,6 +127,19 @@ a.sidebar-link:hover {
 }
 
 /* ---------- Toggle ---------- */
+@media (max-width: 768px) {
+    #sidebar {
+        position: fixed;
+        height: 100vh;
+        z-index: 1000;
+        margin-left: -264px;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    #sidebar.show {
+        margin-left: 0;
+    }
+}
+
 .toggle {
     position: relative;
     width: 60px;
@@ -142,6 +155,9 @@ a.sidebar-link:hover {
     background-color: transparent;
     cursor: pointer;
     border: 0;
+}
+.toggler-btn:focus {
+    outline: none;
 }
 
 .container-fluid h1{

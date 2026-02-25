@@ -75,77 +75,10 @@ $unitOptions = ['PC', 'BOTTLE', 'BOX', 'REAM', 'ROLL', 'PACK'];
 
 <body>
     <div class="d-flex">
-        <aside id="sidebar" class="sidebar-toggle">
-            <div class="sidebar-logo mt-3">
-                <img src="../../assets/images/official_logo.png" width="80px" height="80px">
-            </div>
-            <div class="menu-title">Navigation</div>
-
-            <li class="sidebar-item">
-                <a href="admin_dashboard.php" class="sidebar-link">
-                    <i class="bi bi-cast"></i>
-                    <span style="font-size: 18px;">Dashboard</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="req_tab.php" class="sidebar-link active">
-                    <i class="bi bi-box"></i>
-                    <span style="font-size: 18px;">Employee Requests</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="ins_form.php" class="sidebar-link active">
-                    <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Ins Forms</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="stock_in.php" class="sidebar-link active">
-                    <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Stock In</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="stock_out.php" class="sidebar-link active">
-                    <i class="bi bi-basket"></i>
-                    <span style="font-size: 18px;">Deducted Items</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="inventory_dashboard.php" class="sidebar-link">
-                    <i class="bi bi-speedometer2"></i>
-                    <span style="font-size: 18px;">Supply Tracking</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="config_item.php" class="sidebar-link active"><i class="bi bi-gear"></i>
-                    <span>Configuration</span></a>
-            </li>
-             <li class="sidebar-item">
-                <a href="supply.php" class="sidebar-link active"><i class="bi bi-gear"></i>
-                    <span>Update Supplier & Date</span></a>
-            </li>
-            <li class="sidebar-item">
-                <a href="summary.php" class="sidebar-link active"><i class="bi bi-clipboard-data"></i></i>
-                    <span>Summary</span></a>
-            </li>
-            <li class="sidebar-item">
-                <a href="archived_items.php" class="sidebar-link active"><i class="bi bi-archive"></i>
-                    <span>Archived Items</span></a>
-            </li>
-            <li class="sidebar-item">
-                <a href="../../logout.php" class="sidebar-link">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span style="font-size: 18px;">Logout</span>
-                </a>
-            </li>
-        </aside>
+        <?php include "includes/sidebar.php"; ?>
 
         <div class="main">
-            <div class="topbar">
-                <div class="toggle"><button class="toggler-btn" type="button"><i class="bi bi-list-ul" style="font-size:28px;"></i></button></div>
-                <div class="logo d-flex align-items-center"><span class="username me-2 fw-bold text-primary"><?= htmlspecialchars($firstname) ?> (Admin)</span></div>
-            </div>
+            <?php include "includes/topbar.php"; ?>
 
             <div style="width:95%; margin:20px auto; background:#f8f9fa; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                 <div class="card shadow-lg border-0 p-4 rounded-4">

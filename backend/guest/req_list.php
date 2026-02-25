@@ -64,7 +64,7 @@ $departments = $deptResult ? $deptResult->fetch_all(MYSQLI_ASSOC) : [];
                 </div>
             </div>
             <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
-                <table class="table table-bordered table-hover text-center align-middle" id="requestsTable">
+                <table class="table table-hover text-center align-middle mb-0" id="requestsTable">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center">#</th>

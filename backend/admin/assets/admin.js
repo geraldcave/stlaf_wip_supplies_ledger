@@ -34,6 +34,13 @@ function updateRequestStatus(req_id, status) {
 }
 
 const toggler = document.querySelector(".toggler-btn");
-toggler.addEventListener("click", function () {
-  document.querySelector("#sidebar").classList.toggle("collapsed");
-});
+if (toggler) {
+  toggler.addEventListener("click", function () {
+    const sidebar = document.querySelector("#sidebar");
+    if (window.innerWidth <= 768) {
+      sidebar.classList.toggle("show");
+    } else {
+      sidebar.classList.toggle("collapsed");
+    }
+  });
+}
